@@ -1,24 +1,15 @@
 #[macro_use]
 extern crate rocket;
+use chrono::{DateTime, Local};
+
 use passwords::PasswordGenerator;
 
 use rocket::response::status::{Accepted, Forbidden};
 
 use sha256::digest;
 
-struct User {
-    nom: String,
-    prenom: String,
-    pmr: bool,
-    cours: bool,
-    prof: Option<Vec<String>>,
-    horodateur: String,
-    mail: String,
-    pseudo: Option<String>,
-    telephone: String,
-    etude: String,
-    comment: String,
-}
+pub mod sql;
+pub mod models;
 
 fn generate_password() -> String {
     let pg = PasswordGenerator {
@@ -39,60 +30,44 @@ fn generate_hash(password: &String) -> String {
     digest(password)
 }
 
-fn team_exist(name: String) -> bool {
-    // TODO finalize team_exist 
-    true
+fn get_time() -> String {
+    let local_time: DateTime<Local> = Local::now();
+
+    local_time.format("%d/%m/%Y %H:%M:%S").to_string()
+
 }
 
-fn hash_match(hash: String, team_name: String) -> bool {
-    // TODO finalize hash_match
-    true
-}
+fn main(){
 
-#[get("/createTeam/<name>")]
-fn create_team(name: &str) -> Result<Accepted<String>, Forbidden<String>> {
+    let nat: models::User = models::User {
+        name: String::from("CORNELOUP"),
+        first_name: String::from("Nathan"),
+        team_name: String::from("Palm'Breaker"),
+        pmr: false, 
+        course: false,
+        teacher: None,
+        timestamp: get_time(),
+        email: String::from("nathan.corneloup@etudiants.univ-rennes1.fr"),
+        nickname: Some(String::from("Nat")),
+        phone: String::from("0686483057"),
+        study: String::from("L2 ISTN"),
+        comment: String::from("Un ami"),
+};
 
-    // Check if team name already exist
-    if name == String::from("Palm'Breaker"){
-        // TODO : Vérifier si la team existe dans la BDD
-        return Err(Forbidden(Some(format!("L'équipe {} éxiste déjà.", name))))
-    }
-    // Generate a password
-    let password: String = generate_password();
+    println!("{:?}",nat);
 
-    // Generate hash of the password
-    let hash: String = generate_hash(&password);
-
-
-    // TODO : Add teams in the database
-    
-
-    Ok(Accepted(Some(password)))
-}
-
-#[post("/verify/<name>", data="<password>")]
-fn verify(name: &str, password: &str) -> Result<Accepted<()>, Forbidden<()>> {
-
-    // TODO : Vérifier que le nom de la team est correcte
-
-    // TODO : Vérifier que le hash du mdp correspond au hash de l'equipe
-    let hash: String = generate_hash(&password.to_string());
-
-    if(true){
-        Ok(Accepted::<()>(None))
-    }
-    else {
-        Err(Forbidden::<()>(None))
-    }
+    sql::create_table_team();
+    sql::create_table_user();
 }
 
 
 
-
-
+/* 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![create_team,verify])
-}
+    rocket::build().mount("/", routes![])
 
+
+}
+*/
 

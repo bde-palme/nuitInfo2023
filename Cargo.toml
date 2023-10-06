@@ -6,7 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-sqlite = "0.31.1"
 sha256 = "1.4.0"
 rocket = "=0.5.0-rc.3"
 passwords = "3.1.16"
+chrono = "0.4.31"
+rusqlite = "0.29.0"
