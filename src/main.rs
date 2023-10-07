@@ -1,41 +1,14 @@
 #[macro_use]
 extern crate rocket;
-use chrono::{DateTime, Local};
 
-use passwords::PasswordGenerator;
 
 use rocket::response::status::{Accepted, Forbidden};
 
-use sha256::digest;
 
-pub mod sql;
 pub mod models;
+pub mod libs;
 
-fn generate_password() -> String {
-    let pg = PasswordGenerator {
-        length: 12,
-        numbers: true,
-        lowercase_letters: true,
-        uppercase_letters: true,
-        symbols: false,
-        spaces: false,
-        exclude_similar_characters: false,
-        strict: true,
-    };
 
-    pg.generate_one().unwrap()
-}
-
-fn generate_hash(password: &String) -> String {
-    digest(password)
-}
-
-fn get_time() -> String {
-    let local_time: DateTime<Local> = Local::now();
-
-    local_time.format("%d/%m/%Y %H:%M:%S").to_string()
-
-}
 
 fn main(){
 
@@ -46,7 +19,7 @@ fn main(){
         pmr: false, 
         course: false,
         teacher: None,
-        timestamp: get_time(),
+        timestamp: libs::get_time(),
         email: String::from("nathan.corneloup@etudiants.univ-rennes1.fr"),
         nickname: Some(String::from("Nat")),
         phone: String::from("0686483057"),
@@ -56,8 +29,6 @@ fn main(){
 
     println!("{:?}",nat);
 
-    sql::create_table_team();
-    sql::create_table_user();
 }
 
 
