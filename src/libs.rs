@@ -41,6 +41,10 @@ pub async fn create_team(db_handle: &Database, team: Team) -> Result<(),&str> {
     }
 }
 
+// TODO : team_exists(&Database, team_name) -> Result(bool, String)
+// TODO : hash_valid(&Database, team_name, hash) -> Result(bool, String)
+// TODO : add_user_to_team(&Database, team_name, User) -> Result(bool, String)
+
 pub async fn db_name(db_handle: &Database) -> &str {
     return db_handle.name();
 }
