@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "name": { "type": "string" },
+        "first_name": { "type": "string" },
+        "pmr": { "type": "boolean" },
+        "course": { "type": "boolean" },
+        "teacher": {
+            "type": "array",
+            "items": { "type": "string" }
+        },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "email": { "type": "string", "format": "email" },
+        "nickname": { "type": "string" },
+        "phone": { "type": "string" },
+        "study": { "type": "string" },
+        "comment": { "type": "string" }
+    },
+    "required": [
+        "name",
+        "first_name",
+        "pmr",
+        "course",
+        "timestamp",
+        "email",
+        "phone",
+        "study",
+        "comment"
+    ]
+}
