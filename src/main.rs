@@ -15,7 +15,6 @@ fn main(){
     let nat: models::User = models::User {
         name: String::from("CORNELOUP"),
         first_name: String::from("Nathan"),
-        team_name: String::from("Palm'Breaker"),
         pmr: false, 
         course: false,
         teacher: None,

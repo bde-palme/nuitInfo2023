@@ -3,7 +3,6 @@
 pub struct User {
     pub name: String,
     pub first_name: String,
-    pub team_name: String,
     pub pmr: bool,  // This field might need more context to translate accurately.
     pub course: bool,
     pub teacher: Option<Vec<String>>,
@@ -18,5 +17,6 @@ pub struct User {
 
 pub struct Team {
     pub name: String,
-    pub hash: String
+    pub hash: String,
+    pub membres: Vec<String>
 }
