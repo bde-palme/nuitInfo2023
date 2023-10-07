@@ -1,11 +1,10 @@
 use serde::{Deserialize, Serialize};
 
-
 #[derive(Debug, Serialize, Deserialize)]
 pub struct User {
     pub name: String,
     pub first_name: String,
-    pub pmr: bool,  // This field might need more context to translate accurately.
+    pub pmr: bool, // This field might need more context to translate accurately.
     pub course: bool,
     pub teacher: Option<Vec<String>>,
     pub timestamp: String,
@@ -20,5 +19,5 @@ pub struct User {
 pub struct Team {
     pub name: String,
     pub hash: String,
-    pub membres: Vec<String>
+    pub members: Vec<User>,
 }
