@@ -26,10 +26,18 @@ async fn main(){
         comment: String::from("Un ami"),
 };
 
+    let team: models::Team = models::Team {
+        name: String::from("Palm'Breaker"),
+        hash: sha256::digest("123"),
+        membres: vec!(),
+    };
+
     println!("{:?}",nat);
     let db = libs::connect_to_db().await;
     println!("Database name: {}",libs::db_name(&db).await);
-}
+    libs::add_user(&db, nat).await;
+    libs::create_team(&db, team).await;
+}   
 
 
 

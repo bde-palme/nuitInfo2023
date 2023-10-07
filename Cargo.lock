@@ -116,6 +116,7 @@ dependencies = [
  "mongodb",
  "passwords",
  "rocket",
+ "serde",
  "sha256",
  "tokio",
 ]

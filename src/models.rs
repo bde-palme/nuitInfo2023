@@ -1,5 +1,7 @@
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug)]
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct User {
     pub name: String,
     pub first_name: String,
@@ -14,7 +16,7 @@ pub struct User {
     pub comment: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Team {
     pub name: String,
     pub hash: String,
