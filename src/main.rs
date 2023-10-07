@@ -9,8 +9,8 @@ pub mod models;
 pub mod libs;
 
 
-
-fn main(){
+#[tokio::main]
+async fn main(){
 
     let nat: models::User = models::User {
         name: String::from("CORNELOUP"),
@@ -27,7 +27,8 @@ fn main(){
 };
 
     println!("{:?}",nat);
-
+    let db = libs::connect_to_db().await;
+    println!("Database name: {}",libs::db_name(&db).await);
 }
 
 

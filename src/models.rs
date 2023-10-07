@@ -14,7 +14,7 @@ pub struct User {
     pub comment: String,
 }
 
-
+#[derive(Debug)]
 pub struct Team {
     pub name: String,
     pub hash: String,
