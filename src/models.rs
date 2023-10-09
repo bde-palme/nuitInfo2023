@@ -1,3 +1,6 @@
+use rocket::data::{FromData, Outcome};
+use rocket::serde::json::Json;
+use rocket::Data;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -13,6 +16,29 @@ pub struct User {
     pub phone: String,
     pub study: String,
     pub comment: String,
+}
+
+#[rocket::async_trait]
+impl<'r> FromData<'r> for User {
+    type Error = rocket::serde::json::Error<'r>;
+
+    async fn from_data(
+        req: &'r rocket::Request<'_>,
+        data: Data<'r>,
+    ) -> rocket::data::Outcome<'r, Self> {
+        let outcome = Json::<User>::from_data(req, data).await;
+        match outcome {
+            Outcome::Success(json) => Outcome::Success(json.into_inner()),
+            Outcome::Failure((status, _)) => Outcome::Failure((
+                status,
+                rocket::serde::json::Error::Io(std::io::Error::new(
+                    std::io::ErrorKind::Other,
+                    "Deserialization error",
+                )),
+            )),
+            Outcome::Forward(f) => Outcome::Forward(f),
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
