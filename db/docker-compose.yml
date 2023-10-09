@@ -1,11 +1,21 @@
-version: '3.1'
+version: '3.7' 
+
+configs:
+  mongodb_config:
+    file: ./mongodb.conf
 
 services:
-  mongo:
-    build: .
+
+  # Mongo DB
+  mongo: 
+    image: mongo:latest
+    command: mongod --config /etc/mongodb.conf
     ports:
       - "27017:27017"
     volumes:
       - ./data:/data/db
-
-
+    configs:
+      - source: mongodb_config
+        target: /etc/mongodb.conf
+    env_file:
+      - ../src/.env
