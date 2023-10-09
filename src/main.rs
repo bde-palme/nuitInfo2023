@@ -1,51 +1,106 @@
 #[macro_use]
 extern crate rocket;
 
-use rocket::response::status::{Accepted, Forbidden};
+use mongodb::Database;
+use rocket::{
+    response::status::{Accepted, Forbidden},
+    State,
+};
 
 pub mod libs;
 pub mod models;
 
-#[tokio::main]
-async fn main() {
-    let nat: models::User = models::User {
-        name: String::from("CORNELOUP"),
-        first_name: String::from("Nathan"),
-        pmr: false,
-        course: false,
-        teacher: None,
-        timestamp: libs::get_time(),
-        email: String::from("nathan.corneloup@etudiants.univ-rennes1.fr"),
-        nickname: Some(String::from("Nat")),
-        phone: String::from("0686483057"),
-        study: String::from("L2 ISTN"),
-        comment: String::from("Un ami"),
-    };
+#[get("/createTeam/<team_name>")]
+async fn create_team(
+    team_name: String,
+    db_handle: &State<Database>,
+) -> Result<Accepted<String>, Forbidden<String>> {
+    match libs::team_exists(&db_handle, &team_name).await {
+        Ok(true) => return Err(Forbidden(Some("Team already exists.".to_string()))),
+        Ok(false) => (),
+        Err(_) => {
+            return Err(Forbidden(Some(
+                "Failed to check if the team exists.".to_string(),
+            )))
+        }
+    }
+
+    let password = libs::generate_password();
 
     let team: models::Team = models::Team {
-        name: String::from("Palm'Breaker"),
-        hash: sha256::digest("123"),
-        members: vec![],
+        name: team_name.clone(),
+        hash: libs::generate_hash(&password),
+        members: Vec::new(),
     };
 
-    println!("{:?}", nat);
-    let db = libs::connect_to_db().await;
-    println!("Database name: {}", libs::db_name(&db).await);
-    //libs::add_user(&db, nat).await;
-    //libs::create_team(&db, team).await;
-    println!(
-        "{}",
-        libs::add_user_to_team(&db, &String::from("Palm'Breaker"), nat).await
-    );
-    //println!("{:?}", libs::team_exists(&db, &String::from("Palm'Breaker")).await);
-    //println!("{:?}", libs::hash_valid(&db, &String::from("Palm'Breaker"), &sha256::digest("123")).await);
+    match libs::create_team(&db_handle, &team).await {
+        Ok(_) => Ok(Accepted(Some(format!("{}", &password)))),
+        Err(_) => Err(Forbidden(Some("Failed to create the team.".to_string()))),
+    }
 }
 
-/*
+#[post(
+    "/joinTeam/<team_name>/<password>",
+    format = "application/json",
+    data = "<user>"
+)]
+async fn join_team(
+    team_name: String,
+    password: String,
+    user: models::User,
+    db_handle: &State<Database>,
+) -> Result<Accepted<String>, Forbidden<String>> {
+    match libs::team_exists(&db_handle, &team_name).await {
+        Ok(true) => (),
+        Ok(false) => return Err(Forbidden(Some("Team does not exist.".to_string()))),
+        Err(_) => {
+            return Err(Forbidden(Some(
+                "Failed to check if the team exists.".to_string(),
+            )))
+        }
+    }
+
+    // Verify the hash
+    match libs::hash_valid(&db_handle, &team_name, &password).await {
+        Ok(true) => (),
+        Ok(false) => return Err(Forbidden(Some("Wrong password.".to_string()))),
+        Err(_) => {
+            return Err(Forbidden(Some(
+                "Failed to check if the hash is valid.".to_string(),
+            )))
+        }
+    }
+
+    // Check if email or phone aren't already used
+    match libs::user_exists(&db_handle, &user).await {
+        Ok(true) => return Err(Forbidden(Some("Email or phone already used.".to_string()))),
+        Ok(false) => (),
+        Err(_) => {
+            return Err(Forbidden(Some(
+                "Failed to check if the user exists.".to_string(),
+            )))
+        }
+    }
+
+    match libs::add_user(&db_handle, &user).await {
+        Ok(_) => (),
+        Err(_) => return Err(Forbidden(Some("Failed to add the user.".to_string()))),
+    }
+
+    match libs::add_user_to_team(&db_handle, &team_name, user).await {
+        true => Ok(Accepted(Some("User added to the team.".to_string()))),
+        false => Err(Forbidden(Some(
+            "Failed to add the user to the team.".to_string(),
+        ))),
+    }
+}
+
 #[launch]
-fn rocket() -> _ {
-    rocket::build().mount("/", routes![])
+async fn rocket() -> _ {
+    // Create a globally, accessible by functions body db handle
+    let db_handle: Database = libs::connect_to_db().await;
 
-
+    rocket::build()
+        .manage(db_handle)
+        .mount("/", routes![create_team, join_team])
 }
-*/
