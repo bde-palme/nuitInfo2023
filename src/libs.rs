@@ -1,12 +1,13 @@
 use chrono::{DateTime, Local};
 use dotenv::dotenv;
+use std::env;
+
 use mongodb::{
     bson::doc, bson::to_bson, options::ClientOptions, options::UpdateOptions, Client, Collection,
     Database,
 };
 use passwords::PasswordGenerator;
 use sha256::digest;
-use std::env;
 
 use crate::models::{Team, User};
 
@@ -25,21 +26,21 @@ pub async fn connect_to_db() -> Database {
     db
 }
 
-pub async fn add_user(db_handle: &Database, user: User) -> Result<(), &str> {
+pub async fn add_user(db_handle: &Database, user: &User) -> Result<(), String> {
     let collection_handle: Collection<User> = db_handle.collection::<User>("User");
 
-    match collection_handle.insert_one(&user, None).await {
+    match collection_handle.insert_one(user, None).await {
         Ok(_) => Ok(()),
-        Err(_) => Err("Failed to insert the user in the collection."),
+        Err(x) => Err(x.to_string()),
     }
 }
 
-pub async fn create_team(db_handle: &Database, team: Team) -> Result<(), &str> {
+pub async fn create_team(db_handle: &Database, team: &Team) -> Result<(), String> {
     let collection_handle: Collection<Team> = db_handle.collection::<Team>("Team");
 
-    match collection_handle.insert_one(&team, None).await {
+    match collection_handle.insert_one(team, None).await {
         Ok(_) => Ok(()),
-        Err(_) => Err("Failed to insert the user in the collection."),
+        Err(x) => Err(x.to_string()),
     }
 }
 
@@ -65,15 +66,17 @@ async fn get_team(db_handle: &Database, team_name: &String) -> Option<Team> {
     }
 }
 
-pub async fn hash_valid(db_handle: &Database, team_name: &String, hash: &String) -> bool {
-    let team: Team;
+pub async fn hash_valid(
+    db_handle: &Database,
+    team_name: &String,
+    hash: &String,
+) -> Result<bool, String> {
+    let team = get_team(db_handle, team_name).await;
 
-    match get_team(db_handle, team_name).await {
-        Some(x) => team = x,
-        None => return false,
+    match team {
+        Some(x) => Ok(x.hash == generate_hash(hash)),
+        None => Err("Failed to get team.".to_string()),
     }
-
-    return team.hash == hash.clone();
 }
 
 pub async fn add_user_to_team(db_handle: &Database, team_name: &String, user: User) -> bool {
@@ -93,7 +96,48 @@ pub async fn add_user_to_team(db_handle: &Database, team_name: &String, user: Us
         false
     }
 }
-// TODO : add_user_to_team(&Database, team_name, User) -> Result(bool, String)
+
+pub async fn number_of_teams(db_handle: &Database) -> Result<u64, String> {
+    let collection_handle: Collection<Team> = db_handle.collection::<Team>("Team");
+
+    match collection_handle.count_documents(None, None).await {
+        Ok(result) => Ok(result),
+        Err(x) => Err(x.to_string()),
+    }
+}
+
+pub async fn number_of_users(db_handle: &Database) -> Result<u64, String> {
+    let collection_handle: Collection<User> = db_handle.collection::<User>("User");
+
+    match collection_handle.count_documents(None, None).await {
+        Ok(result) => Ok(result),
+        Err(x) => Err(x.to_string()),
+    }
+}
+
+pub async fn user_in_team(
+    db_handle: &Database,
+    team_name: &String,
+    user: &User,
+) -> Result<bool, String> {
+    let collection_handle: Collection<Team> = db_handle.collection::<Team>("Team");
+    let filter: mongodb::bson::Document = doc! {"name":team_name, "members": {"$elemMatch": {"phone":&user.phone, "email":&user.email}}};
+
+    match collection_handle.find_one(filter, None).await {
+        Ok(result) => Ok(result.is_some()),
+        Err(x) => Err(x.to_string()),
+    }
+}
+pub async fn user_exists(db_handle: &Database, user: &User) -> Result<bool, String> {
+    let collection_handle: Collection<User> = db_handle.collection::<User>("User");
+    let filter: mongodb::bson::Document =
+        doc! {"$or": [{"phone":&user.phone}, {"email":&user.email}]};
+
+    match collection_handle.find_one(filter, None).await {
+        Ok(result) => Ok(result.is_some()),
+        Err(x) => Err(x.to_string()),
+    }
+}
 
 pub async fn db_name(db_handle: &Database) -> &str {
     return db_handle.name();
