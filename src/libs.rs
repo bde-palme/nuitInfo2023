@@ -58,10 +58,7 @@ async fn get_team(db_handle: &Database, team_name: &String) -> Option<Team> {
     let filter: mongodb::bson::Document = doc! {"name":team_name};
 
     match collection_handle.find_one(filter, None).await {
-        Ok(team) => match team {
-            Some(x) => Some(x),
-            None => None,
-        },
+        Ok(team) => team,
         Err(_) => None,
     }
 }
@@ -90,11 +87,7 @@ pub async fn add_user_to_team(db_handle: &Database, team_name: &String, user: Us
 
     let result = collection.update_one(filter, update, update_options).await;
 
-    if result.unwrap().matched_count > 0 {
-        true
-    } else {
-        false
-    }
+    result.unwrap().matched_count > 0
 }
 
 pub async fn number_of_teams(db_handle: &Database) -> Result<u64, String> {
