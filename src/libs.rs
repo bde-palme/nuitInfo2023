@@ -1,4 +1,5 @@
 use chrono::{DateTime, Local};
+
 use dotenv::dotenv;
 use std::env;
 
@@ -6,6 +7,7 @@ use mongodb::{
     bson::doc, bson::to_bson, options::ClientOptions, options::UpdateOptions, Client, Collection,
     Database,
 };
+
 use passwords::PasswordGenerator;
 use sha256::digest;
 
@@ -13,10 +15,11 @@ use crate::models::{Team, User};
 
 pub async fn connect_to_db() -> Database {
     dotenv().ok();
-    let db_path: String = env::var("DB_PATH").expect("Failed to load the DB_PATH env var.");
-    println!("{}", db_path);
+    let db_username: String = env::var("MONGO_INITDB_ROOT_USERNAME").expect("Failed to load the MONGO_INITDB_ROOT_USERNAME env var.");
+    let db_password: String = env::var("MONGO_INITDB_ROOT_PASSWORD").expect("Failed to load the MONGO_INITDB_ROOT_PASSWORD env var.");
+    let db_host: String = format!("mongodb://{}:{}@127.0.0.1:27017",db_username, db_password);
 
-    let client_options = ClientOptions::parse(db_path)
+    let client_options = ClientOptions::parse(db_host)
         .await
         .expect("Failed to get DB options.");
 
