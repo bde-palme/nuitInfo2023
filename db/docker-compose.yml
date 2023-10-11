@@ -18,4 +18,4 @@ services:
       - source: mongodb_config
         target: /etc/mongodb.conf
     env_file:
-      - ../src/.env
+      - ../.env
