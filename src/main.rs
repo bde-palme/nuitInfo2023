@@ -151,6 +151,8 @@ async fn rocket() -> _ {
     // Load the .env file
     dotenv().expect("Failed to load .env file.");
 
+    println!("{}",libs::dump_teams(&db_handle).await);
+
     rocket::build()
         .manage(db_handle)
         .mount("/", routes![create_team, join_team, nb_users, nb_teams])

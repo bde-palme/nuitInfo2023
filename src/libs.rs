@@ -10,8 +10,11 @@ use mongodb::{
 
 use passwords::PasswordGenerator;
 use sha256::digest;
+use crate::rocket::futures::TryStreamExt;
 
 use crate::models::{Team, User};
+
+use rocket::serde::json::serde_json;
 
 pub async fn connect_to_db() -> Database {
     dotenv().ok();
@@ -133,6 +136,18 @@ pub async fn user_exists(db_handle: &Database, user: &User) -> Result<bool, Stri
         Ok(result) => Ok(result.is_some()),
         Err(x) => Err(x.to_string()),
     }
+}
+
+pub async fn dump_teams(db_handle: &Database) -> String {
+    let collection: Collection<Team> = db_handle.collection::<Team>("Team");
+
+    let cursor: mongodb::Cursor<Team> = collection.find(None, None).await.unwrap();
+    let documents: Vec<Team> = cursor.try_collect().await.unwrap();
+
+    // Convert Vec<Document> to JSON string
+    let json_string = serde_json::to_string(&documents).expect("Failed to dump the DB");
+
+    json_string
 }
 
 pub async fn db_name(db_handle: &Database) -> &str {
