@@ -122,6 +122,27 @@ async fn nb_users(token: String, db_handle: &State<Database>) -> Result<Accepted
 
 }
 
+#[get("/nbTeams/<token>")]
+async fn nb_teams(token: String, db_handle: &State<Database>) -> Result<Accepted<String>, Forbidden<String>> {
+
+    // Try to get the admin_token from env
+    let admin_token = env::var("ADMIN_TOKEN").expect("Failed to read the ADMIN_TOKEN from the .env file");
+
+    // Check if the token is valid
+    if token != admin_token {
+        Err(Forbidden(Some("Wrong token.".to_string())))
+    }
+
+    else {
+        // Get the number of users
+        let nb_teams = libs::number_of_teams(db_handle).await;
+
+        // Return the number of users
+        Ok(Accepted(Some(nb_teams.unwrap().to_string())))
+
+    }
+}
+
 #[launch]
 async fn rocket() -> _ {
     // Create a globally, accessible by functions body db handle
@@ -132,5 +153,5 @@ async fn rocket() -> _ {
 
     rocket::build()
         .manage(db_handle)
-        .mount("/", routes![create_team, join_team, nb_users])
+        .mount("/", routes![create_team, join_team, nb_users, nb_teams])
 }
