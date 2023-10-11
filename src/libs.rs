@@ -8,9 +8,9 @@ use mongodb::{
     Database,
 };
 
+use crate::rocket::futures::TryStreamExt;
 use passwords::PasswordGenerator;
 use sha256::digest;
-use crate::rocket::futures::TryStreamExt;
 
 use crate::models::{Team, User};
 
@@ -18,9 +18,11 @@ use rocket::serde::json::serde_json;
 
 pub async fn connect_to_db() -> Database {
     dotenv().ok();
-    let db_username: String = env::var("MONGO_INITDB_ROOT_USERNAME").expect("Failed to load the MONGO_INITDB_ROOT_USERNAME env var.");
-    let db_password: String = env::var("MONGO_INITDB_ROOT_PASSWORD").expect("Failed to load the MONGO_INITDB_ROOT_PASSWORD env var.");
-    let db_host: String = format!("mongodb://{}:{}@127.0.0.1:27017",db_username, db_password);
+    let db_username: String = env::var("MONGO_INITDB_ROOT_USERNAME")
+        .expect("Failed to load the MONGO_INITDB_ROOT_USERNAME env var.");
+    let db_password: String = env::var("MONGO_INITDB_ROOT_PASSWORD")
+        .expect("Failed to load the MONGO_INITDB_ROOT_PASSWORD env var.");
+    let db_host: String = format!("mongodb://{}:{}@127.0.0.1:27017", db_username, db_password);
 
     let client_options = ClientOptions::parse(db_host)
         .await
@@ -145,9 +147,7 @@ pub async fn dump_teams(db_handle: &Database) -> String {
     let documents: Vec<Team> = cursor.try_collect().await.unwrap();
 
     // Convert Vec<Document> to JSON string
-    let json_string = serde_json::to_string(&documents).expect("Failed to dump the DB");
-
-    json_string
+    serde_json::to_string(&documents).expect("Failed to dump the DB")
 }
 
 pub async fn db_name(db_handle: &Database) -> &str {
