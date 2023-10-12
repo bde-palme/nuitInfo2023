@@ -1,0 +1,37 @@
+version: '3.7' 
+
+configs:
+  mongodb_config:
+    file: ./db/mongodb.conf
+
+services:
+
+  # Mongo DB
+  mongo: 
+    image: mongo:latest
+    command: mongod --config /etc/mongodb.conf
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./db/data:/data/db
+    configs:
+      - source: mongodb_config
+        target: /etc/mongodb.conf
+    env_file:
+      - .env
+
+  # Rust Backend API
+  backend_api:
+    image: rust:1.73-alpine
+    working_dir: /usr/src/backend_nuitinfo_2023
+    volumes:
+      - ./src:/usr/src/backend_nuitinfo_2023
+    command: ["sh", "-c", "cargo install --path . && ./backend_nuitinfo_2023"]
+    ports: 
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      mongo:
+        condition: service_healthy
+        restart: true
