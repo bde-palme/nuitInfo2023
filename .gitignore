@@ -1,3 +1,4 @@
-/target
+/api/target
 /db/data
 /db/.mongodb
+.env
