@@ -40,6 +40,16 @@ services:
     networks:
       - backend_network
       - user_network
+  
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./front/build:/usr/share/nginx/html
+    networks:
+      - backend_network
+      - user_network
 
 networks:
   backend_network:
