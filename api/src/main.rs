@@ -5,12 +5,41 @@ use mongodb::Database;
 use rocket::{
     response::status::{Accepted, Forbidden},
     State,
+    http::Header
 };
+
+use rocket::{Request, Response};
+use rocket::fairing::{Fairing, Info, Kind};
 
 use std::env;
 
 pub mod libs;
 pub mod models;
+
+pub struct CORS;
+
+#[rocket::async_trait]
+impl Fairing for CORS {
+    fn info(&self) -> Info {
+        Info {
+            name: "Add CORS headers to responses",
+            kind: Kind::Response
+        }
+    }
+
+    async fn on_response<'r>(&self, _request: &'r Request<'_>, response: &mut Response<'r>) {
+        response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
+        response.set_header(Header::new("Access-Control-Allow-Methods", "POST, GET, PATCH, OPTIONS"));
+        response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
+        response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
+    }
+}
+
+#[get("/")]
+async fn index() -> &'static str {
+    "API NDL2023"
+}
+
 
 #[get("/createTeam/<team_name>")]
 async fn create_team(
@@ -46,6 +75,7 @@ async fn create_team(
     format = "application/json",
     data = "<user>"
 )]
+// You must enforce the Content-Type header to be application/json in the request.
 async fn join_team(
     team_name: String,
     password: String,
@@ -145,7 +175,7 @@ async fn rocket() -> _ {
     let db_handle: Database = libs::connect_to_db().await;
 
 
-    rocket::build()
+    rocket::build().attach(CORS)
         .manage(db_handle)
-        .mount("/", routes![create_team, join_team, nb_users, nb_teams])
+        .mount("/", routes![create_team, join_team, nb_users, nb_teams,index])
 }
