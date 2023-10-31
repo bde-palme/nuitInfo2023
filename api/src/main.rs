@@ -3,23 +3,16 @@ extern crate rocket;
 
 use mongodb::Database;
 use rocket::{
+    http::Header,
     response::status::{Accepted, Forbidden},
     State,
-    http::{Header}
 };
 
-use rocket::{Request, Response};
 use rocket::fairing::{Fairing, Info, Kind};
+use rocket::{Request, Response};
 
-use rocket::http::Method;
 use rocket::http::Status;
 use rocket::response::Responder;
-use rocket::data::ByteUnit;
-use rocket::Data;
-use rocket::tokio::io::AsyncReadExt;
-use rocket::tokio::io::AsyncWriteExt;
-
-
 
 use std::{env, path::PathBuf};
 
@@ -33,13 +26,16 @@ impl Fairing for CORS {
     fn info(&self) -> Info {
         Info {
             name: "Add CORS headers to responses",
-            kind: Kind::Response
+            kind: Kind::Response,
         }
     }
 
     async fn on_response<'r>(&self, _request: &'r Request<'_>, response: &mut Response<'r>) {
         response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
-        response.set_header(Header::new("Access-Control-Allow-Methods", "POST, GET, PATCH, OPTIONS"));
+        response.set_header(Header::new(
+            "Access-Control-Allow-Methods",
+            "POST, GET, PATCH, OPTIONS",
+        ));
         response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
         response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
     }
@@ -49,7 +45,6 @@ impl Fairing for CORS {
 async fn index() -> &'static str {
     "API NDL2023"
 }
-
 
 #[get("/createTeam/<team_name>")]
 async fn create_team(
@@ -179,7 +174,6 @@ async fn nb_teams(
     }
 }
 
-
 struct PreflightResponse(Status);
 
 impl PreflightResponse {
@@ -193,8 +187,14 @@ impl<'r> Responder<'r, 'r> for PreflightResponse {
         Ok(rocket::response::Response::build()
             // .sized_body(0, ByteUnit::default())
             .header(Header::new("Access-Control-Allow-Origin", "*"))
-            .header(Header::new("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"))
-            .header(Header::new("Access-Control-Allow-Headers", "Content-Type, Authorization"))
+            .header(Header::new(
+                "Access-Control-Allow-Methods",
+                "GET, POST, PUT, DELETE",
+            ))
+            .header(Header::new(
+                "Access-Control-Allow-Headers",
+                "Content-Type, Authorization",
+            ))
             .status(self.0)
             .finalize())
     }
@@ -212,8 +212,15 @@ async fn rocket() -> _ {
     // Create a globally, accessible by functions body db handle
     let db_handle: Database = libs::connect_to_db().await;
 
-
-    rocket::build().attach(CORS)
-        .manage(db_handle)
-        .mount("/", routes![create_team, join_team, nb_users, nb_teams,index, preflight_handler])
+    rocket::build().attach(CORS).manage(db_handle).mount(
+        "/",
+        routes![
+            create_team,
+            join_team,
+            nb_users,
+            nb_teams,
+            index,
+            preflight_handler
+        ],
+    )
 }
