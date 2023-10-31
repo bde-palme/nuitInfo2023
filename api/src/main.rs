@@ -107,6 +107,55 @@ async fn join_team(
     }
 }
 
+#[post(
+    "/joinSolo",
+    format = "application/json",
+    data = "<user>"
+)]
+// You must enforce the Content-Type header to be application/json in the request.
+async fn join_solo(
+    user: models::User,
+    db_handle: &State<Database>,
+) -> Result<Accepted<String>, Forbidden<String>> {
+    let team_name = "solo".to_string();
+
+    match libs::team_exists(db_handle, &team_name).await {
+        Ok(true) => (),
+        Ok(false) => {
+            create_team(team_name.clone(), db_handle).await.unwrap();
+            ()
+        },
+        Err(_) => {
+            return Err(Forbidden(Some(
+                "Failed to check if the team exists.".to_string(),
+            )))
+        }
+    }
+
+    // Check if email or phone aren't already used
+    match libs::user_exists(db_handle, &user).await {
+        Ok(true) => return Err(Forbidden(Some("Email or phone already used.".to_string()))),
+        Ok(false) => (),
+        Err(_) => {
+            return Err(Forbidden(Some(
+                "Failed to check if the user exists.".to_string(),
+            )))
+        }
+    }
+
+    match libs::add_user(db_handle, &user).await {
+        Ok(_) => (),
+        Err(_) => return Err(Forbidden(Some("Failed to add the user.".to_string()))),
+    }
+
+    match libs::add_user_to_team(db_handle, &team_name, user).await {
+        true => Ok(Accepted(Some("User added to the solo team.".to_string()))),
+        false => Err(Forbidden(Some(
+            "Failed to add the user to the solo team.".to_string(),
+        ))),
+    }
+}
+
 #[get("/nbUsers/<token>")]
 async fn nb_users(
     token: String,
@@ -211,7 +260,8 @@ async fn rocket() -> _ {
             index,
             preflight_handler,
             dump_teams,
-            dump_team
+            dump_team,
+            join_solo
         ],
     )
 }
