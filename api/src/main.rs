@@ -217,24 +217,43 @@ async fn dump_teams(
     }
 }
 
-#[get("/dumpTeam/<teamname>/<token>")]
+#[get("/dumpTeam/<team_name>/<password>")]
 async fn dump_team(
-    teamname: String,
-    token: String,
+    team_name: String,
+    password: String,
     db_handle: &State<Database>,
 ) -> Result<Accepted<String>, Forbidden<String>> {
     // Try to get the admin_token from env
-    let admin_token =
-        env::var("ADMIN_TOKEN").expect("Failed to read the ADMIN_TOKEN from the .env file");
-
-    // Check if the token is valid
-    if token != admin_token {
-        Err(Forbidden(Some("Wrong token.".to_string())))
-    } else {
-        let teams = libs::dump_team(db_handle, &teamname).await;
-
-        Ok(Accepted(Some(teams)))
+    match libs::team_exists(db_handle, &team_name).await {
+        Ok(true) => (),
+        Ok(false) => return Err(Forbidden(Some("Team does not exist.".to_string()))),
+        Err(_) => {
+            return Err(Forbidden(Some(
+                "Failed to check if the team exists.".to_string(),
+            )))
+        }
     }
+
+    // Verify the hash
+    match libs::hash_valid(db_handle, &team_name, &password).await {
+        Ok(true) => (),
+        Ok(false) => return Err(Forbidden(Some("Wrong password.".to_string()))),
+        Err(_) => {
+            return Err(Forbidden(Some(
+                "Failed to check if the hash is valid.".to_string(),
+            )))
+        }
+    }
+
+
+    let team: String = libs::dump_team(db_handle, &team_name).await;
+
+    Ok(Accepted(Some(team)))
+    
+
+    
+
+
 }
 
 
