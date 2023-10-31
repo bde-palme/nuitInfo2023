@@ -256,6 +256,61 @@ async fn dump_team(
 
 }
 
+#[post("/removeUser/<team_name>/<password>",data = "<email>")]
+async fn remove_user(email: String, team_name: String, password: String, db_handle: &State<Database>) -> Result<Accepted<String>, Forbidden<String>>{
+
+    // Check if team exist
+    match libs::team_exists(db_handle, &team_name).await {
+        Ok(true) => (),
+        Ok(false) => return Err(Forbidden(Some("Team does not exist.".to_string()))),
+        Err(_) => {
+            return Err(Forbidden(Some(
+                "Failed to check if the team exists.".to_string(),
+            )))
+        }
+    }
+
+    // Check if password_hash match team_password_hash
+    match libs::hash_valid(db_handle, &team_name, &password).await {
+        Ok(true) => (),
+        Ok(false) => return Err(Forbidden(Some("Wrong password.".to_string()))),
+        Err(_) => {
+            return Err(Forbidden(Some(
+                "Failed to check if the hash is valid.".to_string(),
+            )))
+        }
+    }
+
+    // Check if user exist
+    match libs::user_exists_by_email(db_handle, &email).await {
+        true => (),
+        false => return Err(Forbidden(Some("User does not exist.".to_string()))),
+
+    }
+
+    // Remove user from team
+    match libs::remove_user_from_team(db_handle, &team_name, &email).await {
+        true => (),
+        false => return Err(Forbidden(Some("Failed to remove the user from the team.".to_string()))),
+
+        }
+    
+    // Remove user from users
+
+    match libs::remove_user(db_handle, &email).await {
+        Ok(_) => (),
+        Err(_) => return Err(Forbidden(Some("Failed to remove the user.".to_string()))),
+
+        }
+
+    Ok(Accepted(Some("User removed.".to_string())))
+
+    }
+
+
+
+
+
 #[get("/resetPassword/<team_name>/<token>")]
 async fn reset_password(
     team_name: String,
@@ -323,7 +378,8 @@ async fn rocket() -> _ {
             dump_teams,
             dump_team,
             join_solo,
-            reset_password
+            reset_password,
+            remove_user
         ],
     )
 }

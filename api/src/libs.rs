@@ -52,6 +52,18 @@ pub async fn add_user(db_handle: &Database, user: &User) -> Result<(), String> {
     }
 }
 
+pub async fn remove_user(db_handle: &Database, email: &String) -> Result<(), String> {
+    let collection_handle: Collection<User> = db_handle.collection::<User>("User");
+
+    let filter: mongodb::bson::Document = doc! {"email" : email};
+
+    match collection_handle.delete_one(filter, None).await {
+        Ok(_) => Ok(()),
+        Err(x) => Err(x.to_string()),
+    }
+}
+
+
 pub async fn create_team(db_handle: &Database, team: &Team) -> Result<(), String> {
     let collection_handle: Collection<Team> = db_handle.collection::<Team>("Team");
 
@@ -105,6 +117,31 @@ pub async fn add_user_to_team(db_handle: &Database, team_name: &String, user: Us
     let result = collection.update_one(filter, update, update_options).await;
 
     result.unwrap().matched_count > 0
+}
+
+pub async fn remove_user_from_team(db_handle: &Database, team_name: &String, email: &String) -> bool {
+    let collection: Collection<Team> = db_handle.collection::<Team>("Team");
+
+    let filter: mongodb::bson::Document = doc! {"name" : team_name};
+    let update = doc! { "$pull": { "members": { "email": email } } };
+
+    // Avoid to create a new team, if team don't exist
+    let update_options = UpdateOptions::builder().upsert(false).build();
+
+    let result = collection.update_one(filter, update, update_options).await;
+
+    result.unwrap().matched_count > 0
+   
+}
+
+pub async fn user_exists_by_email(db_handle: &Database, email: &String) -> bool {
+    let collection: Collection<User> = db_handle.collection::<User>("User");
+
+    let filter: mongodb::bson::Document = doc! {"email" : email};
+
+    let result = collection.find_one(filter, None).await;
+
+    result.unwrap().is_some() 
 }
 
 pub async fn number_of_teams(db_handle: &Database) -> Result<u64, String> {
