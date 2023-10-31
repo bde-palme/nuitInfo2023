@@ -1,67 +1,104 @@
-# Team Management API
 
-This API is built using Rocket and provides functionality for managing teams and users. Below are the routes available in this API along with the expected input and output for each route.
+## `route.md`
 
-## Routes
+### 1. Index
 
-### Create Team
+**Route**: `/`  
+**Method**: GET  
+**Description**: Default endpoint for the API.  
+**Response**: "API NDL2023"  
 
-- **Method**: GET
-- **Path**: `/createTeam/<team_name>`
-- **Description**: Creates a new team with the specified name.
-- **Parameters**:
-    - `team_name` (in URL): The name of the team to be created.
-- **Responses**:
-    - `Accepted (200)`: If the team is successfully created, it returns the generated password.
-    - `Forbidden (403)`: If a team with the given name already exists, or if there's a failure in checking the team existence or creating the team.
+---
 
-### Join Team
+### 2. Create Team
 
-- **Method**: POST
-- **Path**: `/joinTeam/<team_name>/<password>`
-- **Description**: Allows a user to join an existing team.
-- **Parameters**:
-    - `team_name` and `password` (in URL): The name of the team to join and the password.
-    - `user` (in body): The user data in JSON format.
-- **Example Input**:
-    ```json
-    {
-        "name": "Doe",
-        "first_name": "John",
-        "pmr": false,
-        "course": true,
-        "teacher": ["Teacher1", "Teacher2"],
-        "timestamp": "2023-10-29T12:34:56Z",
-        "email": "john.doe@example.com",
-        "nickname": "johnd",
-        "phone": "123-456-7890",
-        "study": "Computer Science",
-        "comment": "Excited to join the team!"
-    }
-    ```
-- **Responses**:
-    - `Accepted (200)`: If the user is successfully added to the team.
-    - `Forbidden (403)`: If the team doesn't exist, password is wrong, user data is already used, or there's a failure in any of the database operations.
+**Route**: `/createTeam/<team_name>`  
+**Method**: GET  
+**Parameters**:   
+- `team_name`: The name of the team you want to create.  
+**Requirements**: None.  
+**Response**: Either a success message with the generated password or an error message.  
 
-### Get Number of Users
+---
 
-- **Method**: GET
-- **Path**: `/nbUsers/<token>`
-- **Description**: Retrieves the total number of users in the system.
-- **Parameters**:
-    - `token` (in URL): An admin token.
-- **Responses**:
-    - `Accepted (200)`: Returns the number of users if the token is valid.
-    - `Forbidden (403)`: If the token is invalid.
+### 3. Join Team
 
-### Get Number of Teams
+**Route**: `/joinTeam/<team_name>/<password>`  
+**Method**: POST  
+**Parameters**:   
+- `team_name`: The name of the team you want to join.  
+- `password`: The password for the team.  
+**Body (JSON)**:  
 
-- **Method**: GET
-- **Path**: `/nbTeams/<token>`
-- **Description**: Retrieves the total number of teams in the system.
-- **Parameters**:
-    - `token` (in URL): An admin token.
-- **Responses**:
-    - `Accepted (200)`: Returns the number of teams if the token is valid.
-    - `Forbidden (403)`: If the token is invalid.
+```json
+{
+    "name": "String",
+    "first_name": "String",
+    "pmr": "bool",
+    "course": "bool",
+    "teacher": ["String", ...],
+    "timestamp": "String",
+    "email": "String",
+    "nickname": "String (Optional)",
+    "phone": "String",
+    "study": "String",
+    "comment": "String"
+}
+```
 
+**Requirements**: Content-Type header must be set to `application/json`.  
+**Response**: Either a success message or an error message.  
+
+---
+
+### 4. Number of Users
+
+**Route**: `/nbUsers/<token>`  
+**Method**: GET  
+**Parameters**:   
+- `token`: An administrative token for verification.  
+**Requirements**: Valid admin token.  
+**Response**: Returns the number of users or an error message.  
+
+---
+
+### 5. Number of Teams
+
+**Route**: `/nbTeams/<token>`  
+**Method**: GET  
+**Parameters**:   
+- `token`: An administrative token for verification.  
+**Requirements**: Valid admin token.  
+**Response**: Returns the number of teams or an error message.  
+
+---
+
+### 6. Dump Teams
+
+**Route**: `/dumpTeams/<token>`  
+**Method**: GET  
+**Parameters**:   
+- `token`: An administrative token for verification.  
+**Requirements**: Valid admin token.  
+**Response**: Returns a dump of all teams or an error message.  
+
+---
+
+### 7. Dump Team
+
+**Route**: `/dumpTeam/<teamname>/<token>`  
+**Method**: GET  
+**Parameters**:   
+- `teamname`: The name of the team you want to retrieve.  
+- `token`: An administrative token for verification.  
+**Requirements**: Valid admin token.  
+**Response**: Returns a dump of the specified team or an error message.  
+
+---
+
+### 8. CORS Preflight Handler
+
+**Route**: `/<_path..>`  
+**Method**: OPTIONS  
+**Description**: Handles preflight CORS requests.  
+**Response**: Customized CORS headers.  
