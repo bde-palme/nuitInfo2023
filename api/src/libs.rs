@@ -32,6 +32,17 @@ pub async fn connect_to_db() -> Database {
     db
 }
 
+pub async fn modify_password(db_handle: &Database, team_name: &String, hash: &String) -> Result<(),String>{
+    let collection_handle: Collection<Team> = db_handle.collection::<Team>("Team");
+    let filter: mongodb::bson::Document = doc! {"name":team_name};
+    let update = doc! { "$set": { "hash": hash } };
+
+    match collection_handle.update_one(filter, update, None).await {
+        Ok(_) => Ok(()),
+        Err(_) => return Err("Failed to update the password.".to_string()),
+    }
+}
+
 pub async fn add_user(db_handle: &Database, user: &User) -> Result<(), String> {
     let collection_handle: Collection<User> = db_handle.collection::<User>("User");
 

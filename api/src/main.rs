@@ -256,6 +256,48 @@ async fn dump_team(
 
 }
 
+#[get("/resetPassword/<team_name>/<token>")]
+async fn reset_password(
+    team_name: String,
+    token: String,
+    db_handle: &State<Database>,
+) -> Result<Accepted<String>, Forbidden<String>> {
+    // Try to get the admin_token from env
+    let admin_token =
+        env::var("ADMIN_TOKEN").expect("Failed to read the ADMIN_TOKEN from the .env file");
+
+    // Check if team exist
+    match libs::team_exists(db_handle, &team_name).await {
+        Ok(true) => (),
+        Ok(false) => return Err(Forbidden(Some("Team does not exist.".to_string()))),
+        Err(_) => {
+            return Err(Forbidden(Some(
+                "Failed to check if the team exists.".to_string(),
+            )))
+        }
+    }
+
+
+    // Check if the token is valid
+    if token != admin_token {
+        Err(Forbidden(Some("Wrong token.".to_string())))
+    } else {
+
+        let password = libs::generate_password();
+        let hash_password = libs::generate_hash(&password);
+
+        // Modify the password
+        match libs::modify_password(db_handle, &team_name, &hash_password).await {
+            Ok(_) =>         Ok(Accepted(Some(password)))            ,
+            Err(_) => return Err(Forbidden(Some("Failed to modify the password.".to_string()))),
+
+        }
+
+
+
+    }
+}
+
 
 #[options("/<_path..>")]
 fn preflight_handler(_path: PathBuf) -> PreflightResponse {
@@ -280,7 +322,8 @@ async fn rocket() -> _ {
             preflight_handler,
             dump_teams,
             dump_team,
-            join_solo
+            join_solo,
+            reset_password
         ],
     )
 }
