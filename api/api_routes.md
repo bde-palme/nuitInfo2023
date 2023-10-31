@@ -51,7 +51,35 @@
 
 ---
 
-### 4. Number of Users
+
+
+---
+
+### 9. Join Solo
+
+**Route**: `/joinSolo`  
+**Method**: POST  
+**Body (JSON)**:  
+
+```json
+{
+    "name": "String",
+    "first_name": "String",
+    "pmr": "bool",
+    "course": "bool",
+    "teacher": ["String", ...],
+    "timestamp": "String",
+    "email": "String",
+    "nickname": "String (Optional)",
+    "phone": "String",
+    "study": "String",
+    "comment": "String"
+}
+```
+
+**Requirements**: Content-Type header must be set to `application/json`.  
+**Response**: Either a success message or an error message.
+### 6. Number of Users
 
 **Route**: `/nbUsers/<token>`  
 **Method**: GET  
@@ -62,7 +90,7 @@
 
 ---
 
-### 5. Number of Teams
+### 6. Number of Teams
 
 **Route**: `/nbTeams/<token>`  
 **Method**: GET  
@@ -73,7 +101,7 @@
 
 ---
 
-### 6. Dump Teams
+### 8. Dump Teams
 
 **Route**: `/dumpTeams/<token>`  
 **Method**: GET  
@@ -84,7 +112,7 @@
 
 ---
 
-### 7. Dump Team
+### 8. Dump Team
 
 **Route**: `/dumpTeam/<teamname>/<token>`  
 **Method**: GET  
@@ -96,7 +124,7 @@
 
 ---
 
-### 8. CORS Preflight Handler
+### 9. CORS Preflight Handler
 
 **Route**: `/<_path..>`  
 **Method**: OPTIONS  
