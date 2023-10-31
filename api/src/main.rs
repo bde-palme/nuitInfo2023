@@ -5,13 +5,23 @@ use mongodb::Database;
 use rocket::{
     response::status::{Accepted, Forbidden},
     State,
-    http::Header
+    http::{Header}
 };
 
 use rocket::{Request, Response};
 use rocket::fairing::{Fairing, Info, Kind};
 
-use std::env;
+use rocket::http::Method;
+use rocket::http::Status;
+use rocket::response::Responder;
+use rocket::data::ByteUnit;
+use rocket::Data;
+use rocket::tokio::io::AsyncReadExt;
+use rocket::tokio::io::AsyncWriteExt;
+
+
+
+use std::{env, path::PathBuf};
 
 pub mod libs;
 pub mod models;
@@ -169,6 +179,34 @@ async fn nb_teams(
     }
 }
 
+
+struct PreflightResponse(Status);
+
+impl PreflightResponse {
+    fn new(status: Status) -> Self {
+        PreflightResponse(status)
+    }
+}
+
+impl<'r> Responder<'r, 'r> for PreflightResponse {
+    fn respond_to(self, _: &Request) -> rocket::response::Result<'r> {
+        Ok(rocket::response::Response::build()
+            // .sized_body(0, ByteUnit::default())
+            .header(Header::new("Access-Control-Allow-Origin", "*"))
+            .header(Header::new("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"))
+            .header(Header::new("Access-Control-Allow-Headers", "Content-Type, Authorization"))
+            .status(self.0)
+            .finalize())
+    }
+}
+
+#[options("/<_path..>")]
+fn preflight_handler(_path: PathBuf) -> PreflightResponse {
+    // Customize the CORS headers as needed
+    let response = PreflightResponse::new(Status::Ok);
+    response
+}
+
 #[launch]
 async fn rocket() -> _ {
     // Create a globally, accessible by functions body db handle
@@ -177,5 +215,5 @@ async fn rocket() -> _ {
 
     rocket::build().attach(CORS)
         .manage(db_handle)
-        .mount("/", routes![create_team, join_team, nb_users, nb_teams,index])
+        .mount("/", routes![create_team, join_team, nb_users, nb_teams,index, preflight_handler])
 }

@@ -90,6 +90,7 @@ function createTeam(command: string): CommandResult {
         };
     }
 
+
     function onFirstName(
         firstName: string,
         memberIndex: number
@@ -301,24 +302,57 @@ function createTeam(command: string): CommandResult {
     async function onHowDidYouHear(howDidYouHear: string): Promise<CommandResult> {
         teamParams.howDidYouHear = howDidYouHear;
 
-        let domain = window.location.origin;
-        let port = 8000;
-        let url = `${domain}:${port}/createTeam/${teamParams.teamName}`;
+        const hostname = window.location.hostname;
+        const port = 8000;
+        let createTeamURL = `http://${hostname}:${port}/createTeam/${teamParams.teamName}`;
 
         if (dev) {
-            url = `http://localhost:8000/createTeam/${teamParams.teamName}`;
+            createTeamURL = `http://localhost:8000/createTeam/${teamParams.teamName}`;
         }
 
-        let resp = await fetch(url);
-        let json = await resp.json();
-        console.log(json);
+        let resp = await fetch(createTeamURL);
+        let password = await resp.text();
         
+        let proms = [];
+        let addMemberURL = `http://${hostname}:${port}/joinTeam/${teamParams.teamName}/${password}`;
 
+        if (dev) {
+            addMemberURL = `http://localhost:8000/joinTeam/${teamParams.teamName}/${password}`;
+        }
+
+        for (let member of teamParams.members) {
+            proms.push(
+                fetch(addMemberURL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    mode: "no-cors",
+                    body: JSON.stringify({
+                        name: member.lastName,
+                        first_name: member.firstName,
+                        pmr: member.pmr,
+                        course: member.hasLessons,
+                        teacher: member.professors,
+                        email: member.email,
+                        nickname: "",
+                        phone: member.phone,
+                        study: member.studies,
+                        comment: "",
+                    }),
+                })
+            );
+        }
+
+        await Promise.all(proms)
 
         return {
             input: howDidYouHear,
             textResult: `${CREATE_TEAM} Ok !
-            ${CREATE_TEAM} Félicitations, votre équipe a été créée avec succès !`,
+            ${CREATE_TEAM} Félicitations, votre équipe a été créée avec succès !
+            ${CREATE_TEAM} (!) Mot de passe d'équipe : <span class="font-bold">${password}</span>
+            ${CREATE_TEAM} Ce mot de passe doit être conservé précieusement, il pourra vous servir à modifier votre équipe (ajouter ou supprimer des membres).
+            ${CREATE_TEAM} Votre inscription est terminée. Pour modifier votre équipe, tapez "edit-team".`,
             nextPrefix: null,
             callback: null,
         };
