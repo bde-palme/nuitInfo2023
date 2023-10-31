@@ -148,6 +148,20 @@ pub async fn dump_teams(db_handle: &Database) -> String {
     serde_json::to_string(&documents).expect("Failed to dump the DB")
 }
 
+pub async fn dump_team(db_handle: &Database, team_name: &str) -> String {
+    let collection: Collection<Team> = db_handle.collection::<Team>("Team");
+
+    let filter = doc! {
+        "name": team_name
+    };
+
+    // Find the document matching the team name
+    let result: Option<Team> = collection.find_one(filter, None).await.unwrap();
+
+    serde_json::to_string(&result).expect("Failed to dump the DB")
+}
+
+
 pub async fn db_name(db_handle: &Database) -> &str {
     return db_handle.name();
 }

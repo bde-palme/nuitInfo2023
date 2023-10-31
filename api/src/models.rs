@@ -3,6 +3,12 @@ use rocket::serde::json::Json;
 use rocket::Data;
 use serde::{Deserialize, Serialize};
 
+
+use rocket::fairing::{Fairing, Info, Kind};
+use rocket::{Request, Response};
+use rocket::http::{Header, Status};
+use rocket::response::Responder;
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct User {
     pub name: String,
@@ -46,4 +52,52 @@ pub struct Team {
     pub name: String,
     pub hash: String,
     pub members: Vec<User>,
+}
+
+pub struct CORS;
+
+#[rocket::async_trait]
+impl Fairing for CORS {
+    fn info(&self) -> Info {
+        Info {
+            name: "Add CORS headers to responses",
+            kind: Kind::Response,
+        }
+    }
+
+    async fn on_response<'r>(&self, _request: &'r Request<'_>, response: &mut Response<'r>) {
+        response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
+        response.set_header(Header::new(
+            "Access-Control-Allow-Methods",
+            "POST, GET, PATCH, OPTIONS",
+        ));
+        response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
+        response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
+    }
+}
+
+pub struct PreflightResponse(Status);
+
+impl PreflightResponse {
+    pub fn new(status: Status) -> Self {
+        PreflightResponse(status)
+    }
+}
+
+impl<'r> Responder<'r, 'r> for PreflightResponse {
+    fn respond_to(self, _: &Request) -> rocket::response::Result<'r> {
+        Ok(rocket::response::Response::build()
+            // .sized_body(0, ByteUnit::default())
+            .header(Header::new("Access-Control-Allow-Origin", "*"))
+            .header(Header::new(
+                "Access-Control-Allow-Methods",
+                "GET, POST, PUT, DELETE",
+            ))
+            .header(Header::new(
+                "Access-Control-Allow-Headers",
+                "Content-Type, Authorization",
+            ))
+            .status(self.0)
+            .finalize())
+    }
 }
