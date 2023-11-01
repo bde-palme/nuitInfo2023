@@ -1,8 +1,13 @@
 <script lang="ts">
+    // TODO :
+    // - edition team
+    // - mobile responsive
+
     import { processCommand, type CommandResult } from "../lib/processCommand";
     import { onMount } from "svelte";
     import ndlLogo from "../assets/ndl-logo.svg";
     import close from "../assets/close.svg";
+    import undo from "../assets/undo.svg";
     const DEFAULT_PREFIX =
         "<span class='font-bold text-lime-500'>ndli@palme:~$ </span>";
     const ANIM_DURATION = 250;
@@ -11,31 +16,47 @@
     let commmandInput: HTMLInputElement | undefined;
     let outputDiv: HTMLDivElement | undefined;
     let outputDivHeight = 0;
-    let output: CommandResult[] = [];
+    let outputsFromStart: CommandResult[] = [];
     let prefixSpan: HTMLSpanElement | undefined;
-
 
     async function sendCommand(e: KeyboardEvent) {
         if (e.key != "Enter") return;
 
+        outputsFromStart.push(await callCommand(currentCommand));
+        outputsFromStart = outputsFromStart;
+        currentCommand = "";
+        updateTerminalContent(outputsFromStart);
+    }
+
+    async function callCommand(command: string): Promise<CommandResult> {
+        let commandOutput: CommandResult;
+        if (
+            outputsFromStart.length == 0 ||
+            outputsFromStart[outputsFromStart.length - 1].callback == null
+        ) {
+            commandOutput = processCommand(command);
+        } else if (
+            outputsFromStart[outputsFromStart.length - 1].callback != null
+        ) {
+            commandOutput = await outputsFromStart[outputsFromStart.length - 1]
+                .callback!(command);
+        } else throw new Error("Invalid state");
+
+        return commandOutput;
+    }
+
+    function updateTerminalContent(outputsFromStart: CommandResult[]) {
         if (!outputDiv) return;
         if (!prefixSpan) return;
 
-        let commandOutput: CommandResult;
-        if (output.length == 0 || output[output.length - 1].callback == null) {
-            commandOutput = processCommand(currentCommand);
-        } else if (output[output.length - 1].callback != null) {
-            commandOutput = await output[output.length - 1].callback!(currentCommand);
-        } else throw new Error("Invalid state");
+        let lastOutput =
+            outputsFromStart.length > 0
+                ? outputsFromStart[outputsFromStart.length - 1]
+                : null;
+        prefixSpan.innerHTML = lastOutput?.nextPrefix || DEFAULT_PREFIX;
 
-        output.push(commandOutput);
-        output = output;
-
-        console.log(prefixSpan, commandOutput.nextPrefix, DEFAULT_PREFIX);
-
-        prefixSpan.innerHTML = commandOutput.nextPrefix || DEFAULT_PREFIX;
-
-        outputDiv.innerHTML = output
+        const textOutput = 'Tapez "start" pour commencer...<br />'  +
+        outputsFromStart
             .map((out, i, all) => {
                 if (i > 0) {
                     return (
@@ -54,8 +75,9 @@
                 }
             })
             .join("<br />");
-        outputDivHeight = outputDiv.scrollHeight;
-        currentCommand = "";
+
+        outputDiv.innerHTML = textOutput;
+        console.log(outputDiv.scrollHeight);
 
         outputDiv?.scrollTo({
             top: outputDiv.scrollHeight,
@@ -64,20 +86,39 @@
         });
     }
 
-    onMount(() => {
+    function back() {
+        outputsFromStart.pop();
+        if (outputsFromStart.length > 0) {
+            callCommand(outputsFromStart[outputsFromStart.length - 1].input);
+            updateTerminalContent(outputsFromStart);
+        } else {
+            clear();
+            updateTerminalContent(outputsFromStart);
+        }
+    }
+
+    function clear() {
         if (!prefixSpan) return;
+        outputsFromStart = [];
         prefixSpan.innerHTML = DEFAULT_PREFIX;
-        commmandInput?.focus()        
+    }
+
+    onMount(() => {
+        clear();
+        commmandInput?.focus();
+        updateTerminalContent(outputsFromStart)
     });
 </script>
 
 <div
-    class="absolute py-[3vh] h-[100vh] w-full px-[2vw] left-1/2 -translate-x-1/2 flex flex-col items-center justify-center bg-indigo-950"
+    class="absolute h-[100vh] w-full py-[3vh] px-[2vw] left-1/2 -translate-x-1/2 flex flex-col items-center justify-center bg-indigo-950"
 >
     <div
-        class="border border-indigo-700 border-2 w-full max-h-full flex flex-col items-center rounded-[1vw] relative"
+        class="border border-indigo-700 border-2 w-full max-h-full shrink flex flex-col items-center rounded-[1vw] relative"
     >
-        <div class="w-full h-auto py-[1vh] px-[2vw] bg-indigo-700 rounded-t-[0.6vw] flex justify-between">
+        <div
+            class="w-full h-auto py-[1vh] px-[2vw] bg-indigo-700 rounded-t-[0.6vw] flex justify-between"
+        >
             <h1 class="text-indigo-50 font-bold">Terminal d'inscription</h1>
             <img
                 src={close}
@@ -86,29 +127,44 @@
             />
         </div>
 
-        <div class="p-[2vw] grow shrink w-full flex flex-col justify-between max-h-full min-h-0">
-            <div
-                class="transition-[width] ease-in-out self-start"
-                style:transition-duration={ANIM_DURATION + "ms"}
-                style:width={output.length > 0 ? "10%" : "40%"}
+        <div
+            class="p-[2vw] grow shrink w-full flex flex-col justify-between max-h-full min-h-0 relative"
+        >
+            <button
+                class="bg-indigo-600 hover:bg-indigo-400 active:scale-[0.9] transition-all
+                text-indigo-50 font-bold p-1 rounded-[10px] flex justify-between
+                absolute right-[2vw] top-[2vw]"
+                on:click={back}
             >
-                <img src={ndlLogo} class="w-2/3" alt="la nuit de l'info" />
-            </div>
+                <img src={undo} alt="undo" />
+            </button>
+
+            <img
+                src={ndlLogo}
+                class="transition-[height] ease-in-out self-start"
+                style:transition-duration={ANIM_DURATION + "ms"}
+                style:height={outputsFromStart.length > 0 ? "10vh" : "30vh"}
+                alt="la nuit de l'info"
+            />
+
             <h1 class="text-2xl font-space font-bold w-full text-indigo-100">
                 Bienvenue à la nuit de l'info !
             </h1>
 
             <div
-                class="w-full overflow-scroll transition-[height] ease-in-out grow shrink text-indigo-50 "
+                class="w-full overflow-scroll transition-[height] h-auto ease-in-out grow shrink text-indigo-50
+                scrollbar scrollbar-thumb-indigo-900 scrollbar-track-indigo-950 scrollbar-thumb-rounded-full scrollbar-track-rounded-full"
                 style:transition-duration={ANIM_DURATION + "ms"}
-                style:height={outputDivHeight + "px"}
                 bind:this={outputDiv}
             />
 
-            <div class="w-full flex">
-                <p bind:this={prefixSpan} class="max-w-3/4 grow-0 shrink text-indigo-50"/>
+            <div class="w-full flex items-center">
+                <p
+                    bind:this={prefixSpan}
+                    class="max-w-3/4 grow-0 shrink text-indigo-50"
+                />
                 <input
-                    class="w-full min-w-[150px] flex-1 shrink-2 outline-none border-b-2 border-indigo-50 bg-indigo-950 text-indigo-50 mx-[1vw]"
+                    class="w-full min-w-[150px] flex-1 shrink-2 outline-none border-b-2 border-indigo-50 bg-indigo-950 font-bold text-red-400 mx-[1vw]"
                     on:keydown={sendCommand}
                     bind:value={currentCommand}
                     bind:this={commmandInput}
