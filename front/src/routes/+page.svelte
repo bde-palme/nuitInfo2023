@@ -55,26 +55,31 @@
                 : null;
         prefixSpan.innerHTML = lastOutput?.nextPrefix || DEFAULT_PREFIX;
 
-        const textOutput = 'Tapez "start" pour commencer...<br />'  +
-        outputsFromStart
-            .map((out, i, all) => {
-                if (i > 0) {
-                    return (
-                        (all[i - 1].nextPrefix || DEFAULT_PREFIX) +
-                        out.input +
-                        "<br />" +
-                        out.textResult.replaceAll("\n", "<br />")
-                    );
-                } else {
-                    return (
-                        DEFAULT_PREFIX +
-                        out.input +
-                        "<br />" +
-                        out.textResult.replaceAll("\n", "<br />")
-                    );
-                }
-            })
-            .join("<br />");
+        const textOutput =
+            'Tapez "start" pour commencer...<br />' +
+            outputsFromStart
+                .map((out, i, all) => {
+                    if (i > 0) {
+                        return (
+                            (all[i - 1].nextPrefix || DEFAULT_PREFIX) +
+                            "<span class='text-red-400'>" +
+                            out.input +
+                            "</span>" +
+                            "<br />" +
+                            out.textResult.replaceAll("\n", "<br />")
+                        );
+                    } else {
+                        return (
+                            DEFAULT_PREFIX +
+                            "<span class='text-red-400'>" +
+                            out.input +
+                            "</span>" +
+                            "<br />" +
+                            out.textResult.replaceAll("\n", "<br />")
+                        );
+                    }
+                })
+                .join("<br />");
 
         outputDiv.innerHTML = textOutput;
         console.log(outputDiv.scrollHeight);
@@ -106,7 +111,7 @@
     onMount(() => {
         clear();
         commmandInput?.focus();
-        updateTerminalContent(outputsFromStart)
+        updateTerminalContent(outputsFromStart);
     });
 </script>
 
