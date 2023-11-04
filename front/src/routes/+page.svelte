@@ -19,6 +19,12 @@
     let outputsFromStart: CommandResult[] = [];
     let prefixSpan: HTMLSpanElement | undefined;
 
+    const FIRST_TEXT = `Bienvenue sur le terminal d'inscription de la nuit de l'info ! <br>
+        La nuit de l'info est un hackathon national qui aura lieu du 7 au 8 décembre. Vous aurez toute la nuit pour créer un site web sur un thème national. En plus, vous pourrez choisir des défis, qui sont des contraintes supplémentaires qui vous permettront de gagner des lots (jusqu'à 5 défis et donc 5 lots par équipe). <br>
+        Ce hackathon est national, et se déroule sur plusieurs sites en France. Ici, c'est pour vous inscrire au site de Beaulieu, à Rennes (ISTIC, batiment 12D). <br>
+        Une fois que vous serez inscrit·e, on s'occupe de tout : vous serez inscrit·e à l'échelle nationale, un repas vous sera offert, et les portes de l'ISTIC vous seront ouverte.<br>
+        L'inscription se fait grâce à ce terminal froid et austère... Pour commencer, tapez "start" !<br />`;
+
     async function sendCommand(e: KeyboardEvent) {
         if (e.key != "Enter") return;
 
@@ -56,11 +62,7 @@
         prefixSpan.innerHTML = lastOutput?.nextPrefix || DEFAULT_PREFIX;
 
         const textOutput =
-            `Bienvenue sur le terminal d'inscription de la nuit de l'info ! <br>
-            La nuit de l'info est un hackathon national qui aura lieu du 7 au 8 décembre. Vous aurez toute la nuit pour créer un site web sur un thème national. En plus, vous pourrez choisir des défis, qui sont des contraintes supplémentaires qui vous permettront de gagner des lots (jusqu'à 5 défis et donc 5 lots par équipe). <br>
-            Ce hackathon est national, et se déroule sur plusieurs sites en France. Ici, c'est pour vous inscrire au site de Beaulieu, à Rennes (ISTIC, batiment 12D). <br>
-            Une fois que vous serez inscrit·e, on s'occupe de tout : vous serez inscrit·e à l'échelle nationale, un repas vous sera offert, et les portes de l'ISTIC vous seront ouverte.<br>
-            L'inscription se fait grâce à ce terminal froid et austère... Pour commencer, tapez "start" !<br />` +
+            FIRST_TEXT +
             outputsFromStart
                 .map((out, i, all) => {
                     if (i > 0) {
@@ -115,7 +117,8 @@
     onMount(() => {
         clear();
         commmandInput?.focus();
-        updateTerminalContent(outputsFromStart);
+        if (!outputDiv) return;
+        outputDiv.innerHTML = FIRST_TEXT;
     });
 </script>
 
@@ -148,17 +151,19 @@
                 <img src={undo} alt="undo" />
             </button>
 
-            <img
-                src={ndlLogo}
-                class="transition-[height] ease-in-out self-start"
-                style:transition-duration={ANIM_DURATION + "ms"}
-                style:height={outputsFromStart.length > 0 ? "10vh" : "30vh"}
-                alt="la nuit de l'info"
-            />
+            {#if outputsFromStart.length == 0}
+                <img
+                    src={ndlLogo}
+                    class="transition-[height] ease-in-out self-start h-[10vh] w-auto"
+                    alt="la nuit de l'info"
+                />
 
-            <h1 class="text-2xl font-space font-bold w-full text-indigo-100">
-                Bienvenue à la nuit de l'info !
-            </h1>
+                <h1
+                    class="text-2xl font-space font-bold w-full text-indigo-100"
+                >
+                    Bienvenue à la nuit de l'info !
+                </h1>
+            {/if}
 
             <div
                 class="w-full overflow-scroll transition-[height] h-auto ease-in-out grow shrink text-indigo-50
