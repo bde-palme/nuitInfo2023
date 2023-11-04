@@ -56,7 +56,11 @@
         prefixSpan.innerHTML = lastOutput?.nextPrefix || DEFAULT_PREFIX;
 
         const textOutput =
-            'Tapez "start" pour commencer...<br />' +
+            `Bienvenue sur le terminal d'inscription de la nuit de l'info ! <br>
+            La nuit de l'info est un hackathon national qui aura lieu du 7 au 8 décembre. Vous aurez toute la nuit pour créer un site web sur un thème national. En plus, vous pourrez choisir des défis, qui sont des contraintes supplémentaires qui vous permettront de gagner des lots (jusqu'à 5 défis et donc 5 lots par équipe). <br>
+            Ce hackathon est national, et se déroule sur plusieurs sites en France. Ici, c'est pour vous inscrire au site de Beaulieu, à Rennes (ISTIC, batiment 12D). <br>
+            Une fois que vous serez inscrit·e, on s'occupe de tout : vous serez inscrit·e à l'échelle nationale, un repas vous sera offert, et les portes de l'ISTIC vous seront ouverte.<br>
+            L'inscription se fait grâce à ce terminal froid et austère... Pour commencer, tapez "start" !<br />` +
             outputsFromStart
                 .map((out, i, all) => {
                     if (i > 0) {
