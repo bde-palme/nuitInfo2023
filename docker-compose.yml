@@ -19,8 +19,10 @@ services:
         target: /etc/mongodb.conf
     env_file:
       - .env
+<<<<<<< Updated upstream
     networks:
       - backend_network
+=======
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
       interval: 10s
@@ -29,6 +31,7 @@ services:
       start_period: 40s
 
 
+>>>>>>> Stashed changes
 
   # Rust Backend API
   backend_api:
@@ -43,6 +46,7 @@ services:
     env_file:
       - .env
     depends_on:
+<<<<<<< Updated upstream
       - mongo
     networks:
       - backend_network
@@ -62,6 +66,10 @@ networks:
     driver: bridge
   user_network:
     driver: bridge
+=======
+      mongo:
+        condition: service_healthy
+        restart: true
 
   nginx:
     image: nginx:latest
@@ -69,3 +77,4 @@ networks:
       - "80:80"
     volumes:
       - ./front/build:/usr/share/nginx/html
+>>>>>>> Stashed changes
