@@ -21,14 +21,6 @@ services:
       - .env
     networks:
       - backend_network
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
-      interval: 10s
-      timeout: 10s
-      retries: 5
-      start_period: 40s
-
-
 
   # Rust Backend API
   backend_api:
@@ -57,10 +49,8 @@ services:
     networks:
       - user_network
 
-
 networks:
   backend_network:
     driver: bridge
   user_network:
     driver: bridge
-
