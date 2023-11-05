@@ -57,15 +57,10 @@ services:
     networks:
       - user_network
 
+
 networks:
   backend_network:
     driver: bridge
   user_network:
     driver: bridge
 
-  nginx:
-    image: nginx:latest
-    ports:
-      - "80:80"
-    volumes:
-      - ./front/build:/usr/share/nginx/html
