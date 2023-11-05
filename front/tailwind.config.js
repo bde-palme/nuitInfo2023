@@ -18,8 +18,12 @@ export default {
       },
     },
   },
+<<<<<<< Updated upstream
   plugins: [
     require("tailwind-scrollbar")
   ],
+=======
+  plugins: [],
+>>>>>>> Stashed changes
 }
 

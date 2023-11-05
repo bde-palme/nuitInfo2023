@@ -3,7 +3,11 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
+<<<<<<< Updated upstream
 		"dev": "vite dev --host",
+=======
+		"dev": "vite dev",
+>>>>>>> Stashed changes
 		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -23,7 +27,11 @@
 	},
 	"type": "module",
 	"dependencies": {
+<<<<<<< Updated upstream
 		"@sveltejs/adapter-static": "^2.0.3",
 		"tailwind-scrollbar": "^3.0.5"
+=======
+		"@sveltejs/adapter-static": "^2.0.3"
+>>>>>>> Stashed changes
 	}
 }
