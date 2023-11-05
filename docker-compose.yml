@@ -51,7 +51,7 @@ services:
   nginx:
     image: nginx:latest
     ports:
-      - "8080:80"
+      - "80:80"
     volumes:
       - ./front/build:/usr/share/nginx/html
     networks:
