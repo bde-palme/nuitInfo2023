@@ -27,6 +27,7 @@ services:
     image: rust:1.73
     working_dir: /usr/src/backend_nuitinfo_2023
     volumes:
+      - ./dependencies:/usr/src/cargohome
       - ./api:/usr/src/backend_nuitinfo_2023
     command: ["sh", "-c", "cargo install --path . && cargo run --release"]
     ports: 
