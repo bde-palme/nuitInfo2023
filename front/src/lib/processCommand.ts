@@ -159,7 +159,7 @@ function createTeam(command: string): CommandResult {
 
         const hostname = window.location.hostname;
         const port = 8000;
-        let createTeamURL = `http://${hostname}:${port}/createTeam/${teamParams.teamName}`;
+        let createTeamURL = `https://${hostname}:${port}/createTeam/${teamParams.teamName}`;
 
         if (dev) {
             createTeamURL = `http://localhost:8000/createTeam/${teamParams.teamName}`;
@@ -180,7 +180,7 @@ function createTeam(command: string): CommandResult {
         const password = respText;
 
         let proms = [];
-        let addMemberURL = `http://${hostname}:${port}/joinTeam/${teamParams.teamName}/${password}`;
+        let addMemberURL = `https://${hostname}:${port}/joinTeam/${teamParams.teamName}/${password}`;
 
         if (dev) {
             addMemberURL = `http://localhost:8000/joinTeam/${teamParams.teamName}/${password}`;
@@ -253,7 +253,7 @@ function solo(command: string): CommandResult {
         const hostname = window.location.hostname;
         const port = 8000;
 
-        let addMemberURL = `http://${hostname}:${port}/joinSolo`;
+        let addMemberURL = `https://${hostname}:${port}/joinSolo`;
 
         if (dev) {
             addMemberURL = `http://localhost:8000/joinSolo`;
@@ -334,7 +334,7 @@ function editTeam(command: string): CommandResult {
 
         const hostname = window.location.hostname;
         const port = 8000;
-        let dumpTeamURL = `http://${hostname}:${port}/dumpTeam/${team.name}/${team.password}`;
+        let dumpTeamURL = `https://${hostname}:${port}/dumpTeam/${team.name}/${team.password}`;
 
         if (dev) {
             dumpTeamURL = `http://localhost:8000/dumpTeam/${team.name}/${team.password}`;
@@ -391,7 +391,7 @@ function editTeam(command: string): CommandResult {
                     async (input: string, member: User) => {
                         const hostname = window.location.hostname;
                         const port = 8000;
-                        let joinTeamURL = `http://${hostname}:${port}/joinTeam/${team.name}/${team.password}`;
+                        let joinTeamURL = `https://${hostname}:${port}/joinTeam/${team.name}/${team.password}`;
 
                         if (dev) {
                             joinTeamURL = `http://localhost:8000/joinTeam/${team.name}/${team.password}`;
@@ -475,7 +475,7 @@ function editTeam(command: string): CommandResult {
 
         const hostname = window.location.hostname;
         const port = 8000;
-        let removeMemberURL = `http://${hostname}:${port}/removeUser/${team.name}/${team.password}`;
+        let removeMemberURL = `https://${hostname}:${port}/removeUser/${team.name}/${team.password}`;
 
         if (dev) {
             removeMemberURL = `http://localhost:8000/removeUser/${team.name}/${team.password}`;
