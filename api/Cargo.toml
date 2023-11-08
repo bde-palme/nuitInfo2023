@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 sha256 = "1.4.0"
-rocket = { version = "=0.5.0-rc.3", features = ["json"] }
+rocket = { version = "=0.5.0-rc.3", features = ["json", "tls"] }
 passwords = "3.1.16"
 chrono = "0.4.31"
 mongodb = "2.7.0"
