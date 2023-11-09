@@ -29,6 +29,7 @@ services:
     volumes:
       - ./dependencies:/usr/src/cargohome
       - ./api:/usr/src/backend_nuitinfo_2023
+      - ./certifs:/usr/src/certifs
     command: ["sh", "-c", "cargo install --path . && cargo run --release"]
     ports: 
       - "8000:8000"
