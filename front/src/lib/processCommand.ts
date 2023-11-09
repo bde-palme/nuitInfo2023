@@ -93,7 +93,7 @@ function createTeam(command: string): CommandResult {
 
         return {
             input: teamName,
-            textResult: `${CREATE_TEAM} Ok !
+            textResult: `${CREATE_TEAM} 
             
             ${MEMBER} ---- Ajout du premier membre ----`,
             nextPrefix: `${MEMBER} <span class='font-bold'>Prénom</span> :`,
@@ -101,7 +101,7 @@ function createTeam(command: string): CommandResult {
                 teamParams.members[0] = member;
                 return {
                     input: input,
-                    textResult: `${CREATE_TEAM} Ok !
+                    textResult: `${CREATE_TEAM} 
                     `,
                     nextPrefix: `${CREATE_TEAM} <span class='font-bold'>Souhaites-tu ajouter un membre supplémentaire à ton équipe ? Il n'y a pas de limite au nombre de membre par équipe</span> (oui/non) :`,
                     callback: (input: string) => nextMemberOrEnd(input, 0),
@@ -117,7 +117,7 @@ function createTeam(command: string): CommandResult {
         if (input === "oui") {
             return {
                 input: input,
-                textResult: `${CREATE_TEAM} Ok ! Lancement de la procédure d'ajout d'un nouveau membre.
+                textResult: `${CREATE_TEAM}  Lancement de la procédure d'ajout d'un nouveau membre.
                 ${CREATE_TEAM} ----- Ajout du <span class="font-bold">membre ${
                     memberIndex + 2
                 }</span> à l'équipe -----`,
@@ -126,7 +126,7 @@ function createTeam(command: string): CommandResult {
                     teamParams.members.push(member);
                     return {
                         input: input,
-                        textResult: `${CREATE_TEAM} Ok !
+                        textResult: `${CREATE_TEAM} 
                         `,
                         nextPrefix: `${CREATE_TEAM} <span class='font-bold'>Souhaites-tu ajouter un membre supplémentaire à ton équipe ? Il n'y a pas de limite au nombre de membre par équipe</span> (oui/non) :`,
                         callback: (input: string) =>
@@ -137,7 +137,7 @@ function createTeam(command: string): CommandResult {
         } else if (input === "non") {
             return {
                 input: input,
-                textResult: `${CREATE_TEAM} Ok !
+                textResult: `${CREATE_TEAM} 
                 `,
                 nextPrefix: `${CREATE_TEAM} <span class='font-bold'>Comment avez-vous entendu parler de la nuit de l'info à l'ISTIC ?</span> :`,
                 callback: onHowDidYouHear,
@@ -210,13 +210,30 @@ function createTeam(command: string): CommandResult {
             );
         }
 
-        await Promise.all(proms);
+        let resps = await Promise.all(proms)
+
+        if(resps.some(r => r.status >= 400)) {
+            return {
+                input: howDidYouHear,
+                textResult: `[<span class="text-red-400 font-bold">ERREUR</span>] ${await resps.find(r => r.status >= 400)?.text()}`,
+                nextPrefix: null,
+                callback: null,
+            }  
+        }
 
         return {
             input: howDidYouHear,
-            textResult: `${CREATE_TEAM} Ok !
+            textResult: `${CREATE_TEAM} 
 
             ${CREATE_TEAM} Félicitations, votre équipe a été créée avec succès !
+            Récapitulaif de votre équipe :
+            ${CREATE_TEAM} - Nom d'équipe : <span class="text-red">${teamParams.teamName}</span>
+            ${CREATE_TEAM} - Membres : 
+            ${teamParams.members.map(
+                (m) =>
+                    `<span class="text-red">${m.first_name} ${m.name}</span> \n`
+            )}
+            
             <span class="font-bold text-lg">(!) Mot de passe d'équipe : <span class="text-red">${password}</span></span>
             ${CREATE_TEAM} Ce mot de passe doit être conservé précieusement, il pourra vous servir à modifier votre équipe (ajouter ou supprimer des membres).
             ${CREATE_TEAM} Votre inscription est terminée. Pour modifier votre équipe, tapez "edit-team".`,
@@ -238,7 +255,7 @@ function solo(command: string): CommandResult {
         callback: memberInfosBranch((input: string, member: User) => {
             return {
                 input: input,
-                textResult: `${REGISTRATION} Ok !
+                textResult: `${REGISTRATION} 
                 `,
                 nextPrefix: `${REGISTRATION} <span class='font-bold'>Comment avez-vous entendu parler de la nuit de l'info à l'ISTIC ?</span> :`,
                 callback: () => onHowDidYouHear(input, member),
@@ -290,7 +307,7 @@ function solo(command: string): CommandResult {
 
         return {
             input: howDidYouHear,
-            textResult: `${REGISTRATION} Ok !
+            textResult: `${REGISTRATION} 
             ${REGISTRATION} Votre inscription est terminée. Vous allez être ajouté·e à une équipe de participant·es solo.`,
             nextPrefix: null,
             callback: null,
@@ -322,7 +339,7 @@ function editTeam(command: string): CommandResult {
         team.name = teamName;
         return {
             input: teamName,
-            textResult: `Ok !
+            textResult: `
             `,
             nextPrefix: `${EDIT_TEAM} Mot de passe d'équipe : `,
             callback: onPassword,
@@ -537,7 +554,7 @@ function memberInfosBranch(
 
         return {
             input: firstName,
-            textResult: `${MEMBER} Ok !
+            textResult: `${MEMBER} 
             `,
             nextPrefix: `${MEMBER} <span class='font-bold'>Nom de famille</span> :`,
             callback: (input: string) => onLastName(input),
@@ -549,7 +566,7 @@ function memberInfosBranch(
 
         return {
             input: lastName,
-            textResult: `${MEMBER} Ok !
+            textResult: `${MEMBER} 
             `,
             nextPrefix: `${MEMBER} <span class='font-bold'>Email</span> :`,
             callback: (input: string) => onEmail(input),
@@ -573,7 +590,7 @@ function memberInfosBranch(
 
         return {
             input: email,
-            textResult: `${MEMBER} Ok !
+            textResult: `${MEMBER} 
             `,
             nextPrefix: `${MEMBER} <span class='font-bold'>Téléphone</span> :`,
             callback: (input: string) => onPhone(input),
@@ -595,7 +612,7 @@ function memberInfosBranch(
 
         return {
             input: phone,
-            textResult: `${MEMBER} Ok !
+            textResult: `${MEMBER} 
             `,
             nextPrefix: `${MEMBER} <span class='font-bold'>Pseudo discord</span> (Facultatif, laissez vide) :`,
             callback: (input: string) => onDiscord(input),
@@ -607,7 +624,7 @@ function memberInfosBranch(
 
         return {
             input: discord,
-            textResult: `${MEMBER} Ok !
+            textResult: `${MEMBER} 
             `,
             nextPrefix: `${MEMBER} <span class='font-bold'>Ce membre a t'il des cours jeudi 7 décembre après 16h30 ou le matin du vendredi 8  ?</span> (oui/non) :`,
             callback: (input: string) => onHasLessons(input),
@@ -626,7 +643,7 @@ function memberInfosBranch(
             member.course = true;
             return {
                 input: hasLessonsText,
-                textResult: `${MEMBER} Ok !
+                textResult: `${MEMBER} 
                 `,
                 nextPrefix: `${MEMBER} <span class='font-bold'>Quels sont les noms professeurs avec qui il a cours ?</span> :`,
                 callback: (input: string) => onProfs(input),
@@ -634,7 +651,7 @@ function memberInfosBranch(
         } else {
             return {
                 input: hasLessonsText,
-                textResult: `${MEMBER} Ok !
+                textResult: `${MEMBER} 
                 `,
                 nextPrefix: `${MEMBER} <span class='font-bold'>Formation poursuivie</span> (nom de ta formation) :`,
                 callback: (input: string) => onStudies(input),
@@ -647,7 +664,7 @@ function memberInfosBranch(
 
         return {
             input: professors,
-            textResult: `${MEMBER} Ok !
+            textResult: `${MEMBER} 
             `,
             nextPrefix: `${MEMBER} <span class='font-bold'>Formation poursuivie</span> (nom de ta formation) :`,
             callback: (input: string) => onStudies(input),
@@ -659,7 +676,7 @@ function memberInfosBranch(
 
         return {
             input: studies,
-            textResult: `${MEMBER} Ok !
+            textResult: `${MEMBER} 
             `,
             nextPrefix: `${MEMBER} <span class='font-bold'>Situation de mobilités réduite ?</span> (oui/non) :`,
             callback: (input: string) => onPmr(input),
