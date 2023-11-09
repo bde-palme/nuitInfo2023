@@ -28,7 +28,7 @@
     async function sendCommand(e: KeyboardEvent) {
         if (e.key != "Enter") return;
 
-        outputsFromStart.push(await callCommand(currentCommand));
+        outputsFromStart.push(await callCommand(currentCommand.trim()));
         outputsFromStart = outputsFromStart;
         currentCommand = "";
         updateTerminalContent(outputsFromStart);
