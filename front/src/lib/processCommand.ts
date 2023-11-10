@@ -198,7 +198,7 @@ function createTeam(command: string): CommandResult {
                         nickname: "",
                         phone: member.phone,
                         study: member.study,
-                        comment: "",
+                        comment: teamParams.howDidYouHear,
                     }),
                 })
             );
