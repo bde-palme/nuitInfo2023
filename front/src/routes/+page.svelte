@@ -71,8 +71,10 @@
                             "<span class='text-red-400'>" +
                             out.input +
                             "</span>" +
-                            "<br />" +
-                            out.textResult.replaceAll("\n", "<br />")
+                            (out.textResult.length > 0
+                                ? "<br>" +
+                                  out.textResult.replaceAll("\n", "<br />")
+                                : "")
                         );
                     } else {
                         return (
@@ -80,8 +82,10 @@
                             "<span class='text-red-400'>" +
                             out.input +
                             "</span>" +
-                            "<br />" +
-                            out.textResult.replaceAll("\n", "<br />")
+                            (out.textResult.length > 1
+                                ? "<br>" +
+                                  out.textResult.replaceAll("\n", "<br />")
+                                : "")
                         );
                     }
                 })

@@ -82,8 +82,7 @@ function createTeam(command: string): CommandResult {
 
     return {
         input: command,
-        textResult: `${CREATE_TEAM} --- Lancement de la création d'équipe. ---
-        `,
+        textResult: `${CREATE_TEAM} --- Lancement de la création d'équipe. ---`,
         nextPrefix: `${CREATE_TEAM} <span class='font-bold'>Nom d'équipe</span> :`,
         callback: onTeamName,
     };
@@ -93,15 +92,13 @@ function createTeam(command: string): CommandResult {
 
         return {
             input: teamName,
-            textResult: `${CREATE_TEAM} 
-            
-            ${MEMBER} ---- Ajout du premier membre ----`,
+            textResult: `${MEMBER} ---- Ajout du premier membre ----`,
             nextPrefix: `${MEMBER} <span class='font-bold'>Prénom</span> :`,
             callback: memberInfosBranch((input: string, member: User) => {
                 teamParams.members[0] = member;
                 return {
                     input: input,
-                    textResult: `${CREATE_TEAM}`,
+                    textResult: ``,
                     nextPrefix: `${CREATE_TEAM} <span class='font-bold'>Souhaites-tu ajouter un membre supplémentaire à ton équipe ? Il n'y a pas de limite au nombre de membre par équipe</span> (oui/non) :`,
                     callback: (input: string) => nextMemberOrEnd(input, 0),
                 };
@@ -135,7 +132,7 @@ function createTeam(command: string): CommandResult {
         } else if (input === "non") {
             return {
                 input: input,
-                textResult: `${CREATE_TEAM}`,
+                textResult: ``,
                 nextPrefix: `${CREATE_TEAM} <span class='font-bold'>Comment avez-vous entendu parler de la nuit de l'info à l'ISTIC ?</span> :`,
                 callback: onHowDidYouHear,
             };
