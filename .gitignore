@@ -1,7 +1,10 @@
-/api/target
 /db/data
 /db/.mongodb
 .env
 target
 /dependencies
 certifs
+.token
+/api/node_modules
+*node_modules*
+/api/*.js
