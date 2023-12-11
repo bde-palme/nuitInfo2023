@@ -316,6 +316,14 @@ export async function add_team(team: Team): Promise<boolean> {
 }
 
 export async function add_user_to_team(teamName: string, user: User): Promise<boolean> {
+    
+    // check if max_participants_per_team is reached
+    let current_participants: number = await get_number_of_members(teamName);
+    if (current_participants >= max_participants_per_team) {
+        console.log("Max participants per team reached");
+        return false;
+    }
+    
     const collection = db.collection("Team");
 
     const filter = { name: teamName };
