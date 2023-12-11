@@ -10,60 +10,8 @@
     
     <h1>Interface d'ajout de joueur</h1>
 
-    <!-- 
-        app.post('/api/users/create', async (req, res) => {
-    const user: lib.User = {
-      name: req.body.name,
-      first_name: req.body.first_name,
-      pmr: req.body.pmr,
-      course: req.body.course,
-      teacher: req.body.teacher,
-      timestamp: req.body.timestamp,
-      email: req.body.email,
-      nickname: req.body.nickname,
-      phone: req.body.phone,
-      study: req.body.study,
-      comment: req.body.comment
-    };
-  
-    const teamName = req.body.team_name;
-    const teamHash = req.body.team_hash;
-  
-    // Check if all parameters are provided and are of the correct type
-    if (typeof user.name !== 'string' || typeof user.first_name !== 'string' || 
-        typeof user.pmr !== 'boolean' || typeof user.course !== 'boolean' || 
-        !Array.isArray(user.teacher) || typeof user.timestamp !== 'string' || 
-        typeof user.email !== 'string' || typeof user.nickname !== 'string' || 
-        typeof user.phone !== 'string' || typeof user.study !== 'string' || 
-        typeof user.comment !== 'string' || typeof teamName !== 'string' || 
-        typeof teamHash !== 'string') {
-      res.status(400).send('Invalid parameters');
-      return;
-    }
-  
-    const userExists = await lib.user_exist(user.email, user.phone, user.nickname);
-    if (userExists) {
-      res.status(400).send('User already exists');
-      return;
-    }
-  
-    await lib.add_user(user);
-  
-    const teamExists = await lib.team_exist(teamName);
-    if (teamExists) {
-      const isValidHash = await lib.compare_team_hash(teamName, teamHash);
-      if (isValidHash) {
-        await lib.add_user_to_team(teamName, user);
-      } else {
-        res.status(400).send('Invalid team hash');
-        return;
-      }
-    }
-  
-    res.status(201).send('User created and added to team');
-  });
+   
 
-    -->
         <style>
             body {
                 font-family: Arial, sans-serif;
