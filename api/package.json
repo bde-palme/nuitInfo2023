@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "dev": "npx tsc -w lib.ts api.ts"
+  },
   "dependencies": {
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
