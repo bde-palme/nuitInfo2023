@@ -87,9 +87,10 @@ const db_password = process.env.MONGO_INITDB_ROOT_PASSWORD;
 const db_uri = "mongodb://" + db_user + ":" + db_password + "@localhost:27017";
 const max_participants: number = parseInt(process.env.MAX_PARTICIPANTS || "0");
 const max_participants_per_team :number = parseInt(process.env.MAX_PARTICIPANTS_PER_TEAM || "0");
+const db_name = process.env.MONGO_INITDB_DATABASE;
 
 // Check for non-empty environment variables
-if (!db_user || !db_password || !process.env.MAX_PARTICIPANTS || !process.env.MAX_PARTICIPANTS_PER_TEAM) {
+if (!db_user || !db_password || !db_name || !process.env.MAX_PARTICIPANTS || !process.env.MAX_PARTICIPANTS_PER_TEAM) {
     console.error("Environment variables not set");
     process.exit(1);
 }
@@ -101,7 +102,7 @@ const client = new MongoClient(db_uri);
 client.connect();
 
 // Get the database instance
-const db = client.db("palmhackathon2024");
+const db = client.db(db_name);
 
 
 export async function get_number_of_users(): Promise<number> {
