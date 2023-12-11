@@ -1,5 +1,6 @@
 import { MongoClient } from "mongodb";
 import * as dotenv from "dotenv";
+const sha256 = require('sha256');
 
 
 /* DB Schemas 
@@ -69,7 +70,7 @@ export interface User {
     first_name: string;
     pmr: boolean;
     course: boolean;
-    teacher: string[];
+    teacher: string;
     timestamp: string;
     email: string;
     nickname: string;
@@ -93,7 +94,7 @@ const client = new MongoClient(db_uri);
 client.connect();
 
 // Get the database instance
-const db = client.db("admin");
+const db = client.db("palmhackathon2024");
 
 
 export async function get_number_of_users(): Promise<number> {
@@ -119,15 +120,15 @@ export async function get_number_of_members(teamName: string): Promise<number> {
     return team.members.length;
 }
 
-export async function compare_team_hash(hash: string, teamName: string): Promise<boolean> {
+export async function compare_team_password(password: string, teamName: string): Promise<boolean> {
     const collection = db.collection("Team");
     const team = await collection.findOne({ name: teamName });
 
     if (team === null) {
-        throw new Error(`Team ${teamName} does not exist`);
+        return false;
     }
 
-    return team.hash === hash;
+    return team.hash === sha256(password);
 }
 
 
@@ -168,13 +169,28 @@ export async function remove_from_team(nickname: string, teamName: string): Prom
 export async function delete_user(username: string): Promise<boolean> {
     const collection = db.collection("User");
     const result = await collection.deleteOne({ nickname: username });
-    return result.deletedCount > 0;
+    
+    if (result.deletedCount > 0) {
+        console.log("User deleted: " + username);
+        return true;
+    }
+    else {
+        console.log("Failed to delete user: : " + username);
+        return false;
   }
+}
   
   export async function delete_team(teamName: string): Promise<boolean> {
     const collection = db.collection("Team");
     const result = await collection.deleteOne({ name: teamName });
-    return result.deletedCount > 0;
+    if(result.deletedCount > 0){
+      console.log("Team deleted: " + teamName);
+      return true;
+    }
+    else{
+      console.log("Failed to delete team: " + teamName);
+      return false;
+    }
   }
 
 export async function get_all_users(): Promise<string> {
@@ -198,6 +214,7 @@ export async function add_user(user: User): Promise<boolean> {
     try {
         const collection = db.collection("User");
         await collection.insertOne(user);
+        console.log('User created:', JSON.stringify(user, null, 2));
         return true;
     } catch (error) {
         console.error('Error creating user:', error);
@@ -208,8 +225,10 @@ export async function add_user(user: User): Promise<boolean> {
 
 export async function add_team(team: Team): Promise<boolean> {
     try {
+        team.hash = sha256(team.hash);
         const collection = db.collection("Team");
         await collection.insertOne(team);
+        console.log('Team created:', JSON.stringify(team, null, 2));
         return true;
     } catch (error) {
         console.error('Error creating team:', error);
@@ -228,7 +247,14 @@ export async function add_user_to_team(teamName: string, user: User): Promise<bo
 
     const result = await collection.updateOne(filter, update, updateOptions);
 
-    return result.matchedCount > 0;
+    if(result.modifiedCount > 0){
+      console.log(JSON.stringify(user, null, 2) + " added to team: " + teamName);
+      return true;
+    }
+    else{
+      console.log("Failed to add " + JSON.stringify(user, null, 2) + " to team: " + teamName);
+      return false;
+    }
 }
 
 export async function team_exist(teamName: string): Promise<boolean> {

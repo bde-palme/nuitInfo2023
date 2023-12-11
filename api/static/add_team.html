@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interface d'ajout d'équipe</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+</body>
+    
+    <h1>Interface d'ajout d'équipe</h1>
+
+
+    <!-- Create a form for the route -->
+    <form id="form" action="/api/teams/create" method="post">
+        <label for="teamName">Nom d'équipe</label>
+        <input type="text" name="teamName" id="teamName">
+        <label for="teamHash">Mot de passe</label>
+        <input type="password" name="teamHash" id="teamHash">
+        <input type="submit" value="Create team">
+        
+    </form>
+    
+ 
+
+</body>
+</html>
