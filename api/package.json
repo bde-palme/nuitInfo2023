@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "dev": "npx tsc -w lib.ts api.ts"
+    "dev": "npx tsc -w lib.ts api.ts",
+    "watch":"nodemon api.js"
   },
   "dependencies": {
     "body-parser": "^1.20.2",
