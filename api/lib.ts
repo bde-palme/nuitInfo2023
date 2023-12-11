@@ -166,18 +166,39 @@ export async function remove_from_team(nickname: string, teamName: string): Prom
     return result.modifiedCount > 0;
   }
 
-export async function delete_user(username: string): Promise<boolean> {
-    const collection = db.collection("User");
-    const result = await collection.deleteOne({ nickname: username });
-    
-    if (result.deletedCount > 0) {
-        console.log("User deleted: " + username);
-        return true;
-    }
-    else {
-        console.log("Failed to delete user: : " + username);
+  export async function delete_user(username: string): Promise<boolean> {
+    const userCollection = db.collection("User");
+    const teamCollection = db.collection("Team");
+
+    // Find the team that includes the user in its members array
+    const team = await teamCollection.findOne({ "members.nickname": username });
+    if (!team) {
+        console.log("Team not found for user: " + username);
         return false;
-  }
+    }
+
+    // Remove the user from the team
+    const updateResult = await teamCollection.updateOne(
+        { _id: team._id },
+        { $pull: { members: { nickname: username } } }
+    );
+
+    if (updateResult.modifiedCount > 0) {
+        console.log("User removed from team: " + username);
+
+        // Delete the user from the User collection
+        const deleteResult = await userCollection.deleteOne({ nickname: username });
+        if (deleteResult.deletedCount > 0) {
+            console.log("User deleted: " + username);
+            return true;
+        } else {
+            console.log("Failed to delete user: " + username);
+            return false;
+        }
+    } else {
+        console.log("Failed to remove user from team: " + username);
+        return false;
+    }
 }
   
   export async function delete_team(teamName: string): Promise<boolean> {

@@ -240,3 +240,23 @@ app.get('/api/users/', async (req, res) => {
     res.send(team);
   });
 
+  app.get('/api/users/:username/remove', async (req, res) => {
+    const token = req.query.token;
+
+    if (token !== api_token) {
+      res.status(403).send('Invalid token');
+      return;
+    }
+
+    const username = req.params.username;
+    const user = await lib.get_user(username);
+
+    if (user === null) {
+      res.status(404).send('User not found');
+      return;
+    }
+
+    await lib.delete_user(username);
+    res.send('User removed');
+  });
+
