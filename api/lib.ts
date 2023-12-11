@@ -85,9 +85,16 @@ dotenv.config({ path: "../.env" });
 const db_user = process.env.MONGO_INITDB_ROOT_USERNAME;
 const db_password = process.env.MONGO_INITDB_ROOT_PASSWORD;
 const db_uri = "mongodb://" + db_user + ":" + db_password + "@localhost:27017";
+const max_participants: number = parseInt(process.env.MAX_PARTICIPANTS || "0");
+const max_participants_per_team :number = parseInt(process.env.MAX_PARTICIPANTS_PER_TEAM || "0");
+
+// Check for non-empty environment variables
+if (!db_user || !db_password || !process.env.MAX_PARTICIPANTS || !process.env.MAX_PARTICIPANTS_PER_TEAM) {
+    console.error("Environment variables not set");
+    process.exit(1);
+}
 
 // Create a database client
-
 const client = new MongoClient(db_uri);
 
 // Connect to the database
@@ -101,6 +108,18 @@ export async function get_number_of_users(): Promise<number> {
     const collection = db.collection("User");
     const count = await collection.countDocuments();
     return count;
+}
+
+export async function get_submission_info(): Promise<any> {
+    // Get the max number of participants per team
+    
+
+    // Return the submission info
+    return {
+        max_participants_per_team: max_participants_per_team,
+        max_participants: max_participants,
+        current_participants: await get_number_of_users()
+    };
 }
 
 export async function get_number_of_teams(): Promise<number> {
@@ -201,18 +220,49 @@ export async function remove_from_team(nickname: string, teamName: string): Prom
     }
 }
   
-  export async function delete_team(teamName: string): Promise<boolean> {
-    const collection = db.collection("Team");
-    const result = await collection.deleteOne({ name: teamName });
-    if(result.deletedCount > 0){
-      console.log("Team deleted: " + teamName);
-      return true;
+export async function delete_team(teamName: string): Promise<boolean> {
+    const teamCollection = db.collection("Team");
+    const userCollection = db.collection("User");
+
+    // Find the team
+    const team = await teamCollection.findOne({ name: teamName });
+    if (!team) {
+        console.log("Team not found: " + teamName);
+        return false;
     }
-    else{
-      console.log("Failed to delete team: " + teamName);
-      return false;
+
+    // Delete all members of the team from the User collection
+    for (const member of team.members) {
+        const deleteResult = await userCollection.deleteOne({ nickname: member.nickname });
+        if (deleteResult.deletedCount > 0) {
+            console.log("User deleted: " + member.nickname);
+        } else {
+            console.log("Failed to delete user: " + member.nickname);
+        }
     }
-  }
+
+    // Delete the team
+    const deleteResult = await teamCollection.deleteOne({ name: teamName });
+    if (deleteResult.deletedCount > 0) {
+        console.log("Team deleted: " + teamName);
+        return true;
+    } else {
+        console.log("Failed to delete team: " + teamName);
+        return false;
+    }
+}   
+
+export async function isEmailUsed(email: string): Promise<boolean> {
+    const userCollection = db.collection("User");
+
+    // Find a user with the given email
+    const user = await userCollection.findOne({ email: email });
+
+    // If a user is found, return true, otherwise return false
+    return user != null;
+}
+
+
 
 export async function get_all_users(): Promise<string> {
     const collection = db.collection("User");
@@ -232,6 +282,14 @@ export async function get_all_teams(): Promise<string> {
 // create create_user(user: User) -> void
 
 export async function add_user(user: User): Promise<boolean> {
+
+    // check if max_participants is reached
+    let current_participants: number = await get_number_of_users();
+    if (current_participants >= max_participants) {
+        console.log("Max participants reached");
+        return false;
+    }
+
     try {
         const collection = db.collection("User");
         await collection.insertOne(user);
