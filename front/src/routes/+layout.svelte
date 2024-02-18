@@ -1,11 +1,9 @@
 <script>
-  import "../app.css";
+    import "../app.css";
+    import { Toaster } from "$lib/components/ui/sonner";
 </script>
 
-<slot />
-
-<style>
-  * {
-    box-sizing: border-box;
-  }
-</style>
+<Toaster theme="light" />
+<div>
+    <slot />
+</div>

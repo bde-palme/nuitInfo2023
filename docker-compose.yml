@@ -5,7 +5,6 @@ configs:
     file: ./db/mongodb.conf
 
 services:
-
   # Mongo DB
   mongo: 
     image: mongo:latest
@@ -19,12 +18,32 @@ services:
         target: /etc/mongodb.conf
     env_file:
       - .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
     networks:
       - backend_network
+      
 
-
+  # # Node.js
+  nodejs:
+    depends_on:
+      - mongo
+    image: node:latest
+    volumes:
+      - .env:/.env
+      - .:/app
+    working_dir: /app/api
+    command: npm run dev
+    ports:
+      - "3000:3000"
+    networks:
+      - backend_network
+      - user_network
 
 networks:
   backend_network:
+    driver: bridge
+  user_network:
     driver: bridge
 

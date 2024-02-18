@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "dev": "npx tsc -w lib.ts api.ts",
+    "dev": "nodemon api.js",
     "watch":"nodemon api.js"
   },
   "dependencies": {

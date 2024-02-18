@@ -15,7 +15,8 @@
         "nickname": { "type": "string" },
         "phone": { "type": "string" },
         "study": { "type": "string" },
-        "comment": { "type": "string" }
+        "comment": { "type": "string" },
+        "genre": { "type": "string" }
     },
     "required": [
         "name",
@@ -26,6 +27,7 @@
         "email",
         "phone",
         "study",
-        "comment"
+        "comment",
+        "genre"
     ]
 }

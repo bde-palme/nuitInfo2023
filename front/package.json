@@ -24,6 +24,13 @@
 	"type": "module",
 	"dependencies": {
 		"@sveltejs/adapter-static": "^2.0.3",
-		"tailwind-scrollbar": "^3.0.5"
+		"bits-ui": "^0.14.0",
+		"clsx": "^2.1.0",
+		"lucide-svelte": "^0.331.0",
+		"mode-watcher": "^0.2.0",
+		"svelte-sonner": "^0.3.11",
+		"tailwind-merge": "^2.2.0",
+		"tailwind-scrollbar": "^3.0.5",
+		"tailwind-variants": "^0.1.20"
 	}
 }
