@@ -9,4 +9,4 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 bun.lockb
 package-lock.json
-./front/build
+/build
