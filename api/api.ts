@@ -6,6 +6,9 @@ const api_token = process.env.ADMIN_TOKEN;
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const http = require("http");
+const https = require("https");
+import fs from "fs";
 
 const app = express();
 const port = 80;
@@ -33,8 +36,29 @@ app.use((req, res, next) => {
     next();
 });
 
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+// app.listen(port, () => {
+//     console.log(`Server running at http://localhost:${port}`);
+// });
+
+const privkey = fs.readdirSync("../certs/privkey.pem");
+const cert = fs.readdirSync("../certs/cert.pem");
+const ca = fs.readdirSync("../certs/chain.pem");
+
+const credentials = {
+    key: privkey,
+    cert: cert,
+    ca: ca,
+};
+
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(credentials, app);
+
+httpServer.listen(80, () => {
+    console.log("HTTP Server running on port 80");
+});
+
+httpsServer.listen(443, () => {
+    console.log("HTTPS Server running on port 443");
 });
 
 app.use(express.static("../front/build", { extensions: ["html"] }));

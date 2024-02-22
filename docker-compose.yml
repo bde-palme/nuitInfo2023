@@ -1,4 +1,4 @@
-version: '3.7' 
+version: '3.7'
 
 configs:
   mongodb_config:
@@ -6,7 +6,7 @@ configs:
 
 services:
   # Mongo DB
-  mongo: 
+  mongo:
     image: mongo:latest
     command: mongod --config /etc/mongodb.conf
     ports:
@@ -23,7 +23,6 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
     networks:
       - backend_network
-      
 
   # # Node.js
   nodejs:
@@ -37,6 +36,7 @@ services:
     command: npm run dev
     ports:
       - "80:80"
+      - "443:443"
     networks:
       - backend_network
       - user_network
@@ -46,4 +46,3 @@ networks:
     driver: bridge
   user_network:
     driver: bridge
-
