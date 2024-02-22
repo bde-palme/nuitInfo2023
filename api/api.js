@@ -43,7 +43,7 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var cors = require("cors");
 var app = express();
-var port = 3000;
+var port = 80;
 lib.team_exist("solo").then(function (teamExists) {
     if (!teamExists) {
         lib.add_team({
@@ -181,7 +181,7 @@ app.post("/api/users/create", function (req, res) { return __awaiter(void 0, voi
                     pmr: req.body.pmr,
                     course: req.body.course,
                     teacher: req.body.teacher,
-                    timestamp: new Date().toISOString(),
+                    timestamp: new Date().toISOString(), // Fix: Convert the timestamp to a string using toISOString()
                     email: req.body.email,
                     genre: req.body.genre,
                     nickname: req.body.nickname,
@@ -273,7 +273,7 @@ app.post("/api/users/create-admin", function (req, res) { return __awaiter(void 
                     pmr: req.body.pmr,
                     course: req.body.course,
                     teacher: req.body.teacher,
-                    timestamp: new Date().toISOString(),
+                    timestamp: new Date().toISOString(), // Fix: Convert the timestamp to a string using toISOString()
                     email: req.body.email,
                     genre: req.body.genre,
                     nickname: req.body.nickname,

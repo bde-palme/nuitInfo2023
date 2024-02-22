@@ -36,7 +36,7 @@ services:
     working_dir: /app/api
     command: npm run dev
     ports:
-      - "3000:3000"
+      - "80:80"
     networks:
       - backend_network
       - user_network

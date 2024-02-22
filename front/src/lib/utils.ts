@@ -62,4 +62,4 @@ export const flyAndScale = (
     };
 };
 
-export const API_URL = dev ? "http://localhost:3000" : window.location.origin;
+export const API_URL = window.location.origin;
