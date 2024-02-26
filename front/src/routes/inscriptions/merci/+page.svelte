@@ -63,8 +63,9 @@
     <p>
         Nous avons bien reçu ton inscription. Nous t'enverrons un mail quelques
         jours avant l'évènement, avec toutes les informations nécessaires. Pour
-        le moment, note la date du 5 avril 2024 et de l'heure de début de
-        l'évènement : 18h30. Transmets-la à tes camarades !
+        le moment, note la date du 12 avril 2024 et de l'heure de début de
+        l'évènement : 18h30. On se retrouve dans l'amphi P du batiment 12D.
+        Transmets les infos à tes camarades !
     </p>
     <p>
         Si vous souhaitez vous préparer pour l'évènement, nous pouvons vous
