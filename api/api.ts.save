@@ -40,12 +40,14 @@ app.use((req, res, next) => {
 //     console.log(`Server running at http://localhost:${port}`);
 // });
 
-const privkey = fs.readFileSync("./certs/privkey.pem");
-const ca = fs.readFileSync("./certs/fullchain.pem");
+const privkey = fs.readFileSync("../certs/privkey.pem");
+const cert = fs.readFileSync("../certs/cert.pem");
+const ca = fs.r
 
 const credentials = {
     key: privkey,
-    cert: ca,
+    cert: cert,
+    ca: ca,
 };
 
 const httpServer = http.createServer(app);

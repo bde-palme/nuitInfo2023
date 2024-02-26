@@ -42,6 +42,9 @@ var api_token = process.env.ADMIN_TOKEN;
 var express = require("express");
 var bodyParser = require("body-parser");
 var cors = require("cors");
+var http = require("http");
+var https = require("https");
+var fs = require("fs");
 var app = express();
 var port = 80;
 lib.team_exist("solo").then(function (teamExists) {
@@ -61,8 +64,22 @@ app.use(function (req, res, next) {
     console.log("".concat(new Date().toISOString(), " - ").concat(req.method, " ").concat(req.originalUrl, " STATUS: ").concat(res.statusCode, " - ").concat(req.ip, " - ").concat(req.get("User-Agent"), "}"));
     next();
 });
-app.listen(port, function () {
-    console.log("Server running at http://localhost:".concat(port));
+// app.listen(port, () => {
+//     console.log(`Server running at http://localhost:${port}`);
+// });
+var privkey = fs.readFileSync("./certs/privkey.pem");
+var ca = fs.readFileSync("./certs/fullchain.pem");
+var credentials = {
+    key: privkey,
+    cert: ca,
+};
+var httpServer = http.createServer(app);
+var httpsServer = https.createServer(credentials, app);
+httpServer.listen(80, function () {
+    console.log("HTTP Server running on port 80");
+});
+httpsServer.listen(443, function () {
+    console.log("HTTPS Server running on port 443");
 });
 app.use(express.static("../front/build", { extensions: ["html"] }));
 app.get("/api/users/", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {

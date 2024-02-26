@@ -8,3 +8,4 @@ certifs
 /api/node_modules
 *node_modules*
 /api/*.js
+/api/certs
