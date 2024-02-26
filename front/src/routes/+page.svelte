@@ -62,9 +62,9 @@
             <p class="text-justify w-full">
                 Hack Ta Fac c'est 24 heures pour trouver une idée d'outil
                 numérique qui permettra de révolutionner une thématique de
-                société. Le 5 avril à 18h30, on vous révèlera un thème et vous
+                société. Le 11 avril à 18h30, on vous révèlera un thème et vous
                 aurez jusqu'au lendemain à la même heure pour trouver une idée
-                d'outils numériques, et réaliser un prototype. À la fin, vous
+                d'outil numérique, et réaliser un prototype. À la fin, vous
                 présenterez votre projet en quelques minutes devant les autres
                 équipes et un jury. Vous ne connaissez rien à la programmation,
                 pire, ça vous ennuie profondément ? Mais avez-vous testé cette
@@ -120,14 +120,14 @@
         </h1>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 place-items-center">
             <p class="text-justify w-full">
-                La problématique te sera révélée le 5 avril à 18h30. Tu auras
+                La problématique te sera révélée le 11 avril à 18h30. Tu auras
                 alors 24h avec ton équipe pour trouver votre idée et créer votre
-                prototype. À 17h30, le 6 avril, tu devras présenter ton projet
+                prototype. À 17h30, le 13 avril, tu devras présenter ton projet
                 devant les autres équipes et un jury, et les résultats seront
                 annoncés dans la foulée. Jusqu'à 19h30, on remettra les lots et
-                on se félicitera tous ensemble. Le 5 avril au soir, vous sera
-                servi un repas (gratuit !) tout comme le lendemain matin pour le
-                petit déjeuner, et le midi aussi. Tout au long des 24h, des
+                on se félicitera tous ensemble. Le 11 avril au soir, on vous
+                servira un repas (gratuit !) tout comme le lendemain matin pour
+                le petit déjeuner, et le midi aussi. Tout au long des 24h, des
                 snacks seront à disposition ainsi que des boissons chaudes et
                 froides. Bien sûr, des camions citernes de café seront commandés
                 ! Des coachs seront là pour vous aider et vous guider pour
@@ -193,7 +193,7 @@
                                 ><b>Originalité, caractère innovant</b></span
                             >
                             <span class="whitespace-nowrap font-bold"
-                                >/ 0.5 pts
+                                >/ 1.5 pts
                             </span>
                         </li>
                     </ul>
