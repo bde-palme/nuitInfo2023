@@ -120,7 +120,7 @@
         </h1>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 place-items-center">
             <p class="text-justify w-full">
-                La problématique te sera révélée le 11 avril à 18h30. Tu auras
+                La problématique te sera révélée le 12 avril à 18h30. Tu auras
                 alors 24h avec ton équipe pour trouver votre idée et créer votre
                 prototype. À 17h30, le 13 avril, tu devras présenter ton projet
                 devant les autres équipes et un jury, et les résultats seront
