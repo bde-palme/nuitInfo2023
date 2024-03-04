@@ -62,7 +62,7 @@
             <p class="text-justify w-full">
                 Hack Ta Fac c'est 24 heures pour trouver une idée d'outil
                 numérique qui permettra de révolutionner une thématique de
-                société. Le 11 avril à 18h30, on vous révèlera un thème et vous
+                société. Le 12 avril à 18h30, on vous révèlera un thème et vous
                 aurez jusqu'au lendemain à la même heure pour trouver une idée
                 d'outil numérique, et réaliser un prototype. À la fin, vous
                 présenterez votre projet en quelques minutes devant les autres
