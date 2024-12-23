@@ -1,13 +1,12 @@
-version: '3.7' 
+version: '3.7'
 
 configs:
   mongodb_config:
     file: ./db/mongodb.conf
 
 services:
-
   # Mongo DB
-  mongo: 
+  mongo:
     image: mongo:latest
     command: mongod --config /etc/mongodb.conf
     ports:
@@ -19,38 +18,27 @@ services:
         target: /etc/mongodb.conf
     env_file:
       - .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
     networks:
       - backend_network
 
-  # Rust Backend API
-  backend_api:
-    image: rust:1.73
-    working_dir: /usr/src/backend_nuitinfo_2023
-    volumes:
-      - ./dependencies:/usr/src/cargohome
-      - ./api:/usr/src/backend_nuitinfo_2023
-      - ./certifs:/usr/src/certifs
-    command: ["sh", "-c", "cargo install --path . && cargo run --release"]
-    ports: 
-      - "8000:8000"
-    env_file:
-      - .env
+  # # Node.js
+  nodejs:
     depends_on:
       - mongo
-    networks:
-      - backend_network
-      - user_network
-  
-  nginx:
-    image: nginx:latest
+    image: node:latest
+    volumes:
+      - .env:/.env
+      - .:/app
+    working_dir: /app/api
+    command: npm run dev
     ports:
       - "80:80"
       - "443:443"
-    volumes:
-      - ./front/build:/usr/share/nginx/html
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./certifs:/usr/src/certifs
     networks:
+      - backend_network
       - user_network
 
 networks:
@@ -58,4 +46,3 @@ networks:
     driver: bridge
   user_network:
     driver: bridge
- 

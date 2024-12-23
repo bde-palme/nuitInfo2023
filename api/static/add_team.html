@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interface d'ajout d'équipe</title>
+    <meta charset="utf-8">
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+        }
+
+        div {
+            margin-top: 100px;
+            display: flex;
+            justify-content: center;
+            height: 100vh; /* Adjust as needed */
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        form {
+            width: 400px;
+            height: 250px;
+            padding: 16px;
+            background-color: #fff;
+            box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1);
+            
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        input[type="submit"] {
+            width: 90%;
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #444;
+        }
+    </style>
+</head>
+<body>
+</body>
+    
+    <h1>Interface d'ajout d'équipe</h1>
+
+
+    <!-- Create a form for the route -->
+    <div>
+
+
+    <form id="form" action="/api/teams/create" method="post">
+        <label for="teamName">Nom d'équipe</label>
+        <input type="text" name="teamName" id="teamName">
+        <label for="teamHash">Mot de passe</label>
+        <input type="password" name="teamHash" id="teamHash">
+        <input type="submit" value="Create team">
+        
+    </form>
+</div>  
+    
+ 
+
+</body>
+</html>

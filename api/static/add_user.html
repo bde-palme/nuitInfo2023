@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interface d'ajout de joueur</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+</body>
+    
+    <h1>Interface d'ajout de joueur</h1>
+
+   
+
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+            }
+        
+            form {
+                margin: auto;
+                width: 50%;
+                padding: 10px;
+            }
+        
+            label {
+                display: block;
+                margin: 10px 0;
+            }
+        
+            input[type="text"], input[type="email"] {
+                width: 100%;
+                padding: 10px;
+                box-sizing: border-box;
+            }
+        
+            input[type="submit"] {
+                margin-top: 10px;
+                padding: 10px 20px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                cursor: pointer;
+            }
+        
+            input[type="submit"]:hover {
+                background-color: #45a049;
+            }
+        </style>
+
+    <form id="form" method="post" action="api/users/create">
+        <label for="name">Nom</label>
+        <input type="text" name="name" id="name">
+        <label for="first_name">Prénom</label>
+        <input type="text" name="first_name" id="first_name">
+        <label for="pmr">PMR</label>
+        <input type="checkbox" name="pmr" id="pmr">
+        <label for="course">Cours</label>
+        <input type="checkbox" name="course" id="course">
+        <label for="teacher">Enseignant</label>
+        <input type="text" name="teacher" id="teacher">
+        <label for="email">Email</label>
+        <input type="text" name="email" id="email">
+        <label for="nickname">Pseudo</label>
+        <input type="text" name="nickname" id="nickname">
+        <label for="phone">Téléphone</label>
+        <input type="text" name="phone" id="phone">
+        <label for="study">Etudes</label>
+        <input type="text" name="study" id="study">
+        <label for="comment">Commentaire</label>
+        <input type="text" name="comment" id="comment">
+        <label for="team_name">Nom d'équipe</label>
+        <input type="text" name="teamName" id="teamName">
+        <label for="team_hash">Mot de passe</label>
+        <input type="password" name="teamPassword" id="teamPassword">
+        <input type="submit" value="Create user">
+    </form>
+    
+    
+
+</body>
+</html>
