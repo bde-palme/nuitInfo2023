@@ -1,6 +1,10 @@
-# NDL2023 - API d'inscription de la Palme
+# Nuit de l'info 2023
 
-This project is structured to provide a backend API using Rocket for managing teams and users within the scope of "Nuit de l'Info 2023" event registration at ISTIC. It has a MongoDB setup to handle data persistence. The project is containerized using Docker to ensure a consistent working environment.
+This project is the fullstack website for registering to the Nuit de l'info 2023 event, in Rennes, at the ISTIC school. This event is organized by the student association la Palme.
+
+- Backend: Node.js, typescript
+- Database: MongoDB
+- Frontend: Svelte, typescript
 
 *This is not affiliated to the official organization of la nuit de l'info.*
 
