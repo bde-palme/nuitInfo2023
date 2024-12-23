@@ -64,23 +64,27 @@ app.use(function (req, res, next) {
     console.log("".concat(new Date().toISOString(), " - ").concat(req.method, " ").concat(req.originalUrl, " STATUS: ").concat(res.statusCode, " - ").concat(req.ip, " - ").concat(req.get("User-Agent"), "}"));
     next();
 });
-// app.listen(port, () => {
-//     console.log(`Server running at http://localhost:${port}`);
+try {
+    var privkey = fs.readFileSync("./certs/privkey.pem");
+    var ca = fs.readFileSync("./certs/fullchain.pem");
+    var credentials = {
+        key: privkey,
+        cert: ca,
+    };
+    var httpServer = http.createServer(app);
+    var httpsServer = https.createServer(credentials, app);
+    httpServer.listen(80, function () {
+        console.log("HTTP Server running on port 80");
+    });
+}
+catch (_a) {
+    app.listen(port, function () {
+        console.log("Server running at http://localhost:".concat(port));
+    });
+}
+// httpsServer.listen(443, () => {
+//     console.log("HTTPS Server running on port 443");
 // });
-var privkey = fs.readFileSync("./certs/privkey.pem");
-var ca = fs.readFileSync("./certs/fullchain.pem");
-var credentials = {
-    key: privkey,
-    cert: ca,
-};
-var httpServer = http.createServer(app);
-var httpsServer = https.createServer(credentials, app);
-httpServer.listen(80, function () {
-    console.log("HTTP Server running on port 80");
-});
-httpsServer.listen(443, function () {
-    console.log("HTTPS Server running on port 443");
-});
 app.use(express.static("../front/build", { extensions: ["html"] }));
 app.get("/api/users/", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var token, users;

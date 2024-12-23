@@ -78,7 +78,7 @@
             label: "Études poursuivie (établissement et formation)",
             type: "text",
             id: "study" + title,
-            regex: /^[a-zA-ZÀ-ÿ\s-]+$/,
+            regex: /^[a-zA-Z0-9À-ÿ\s-]+$/,
             required: true,
             error: false,
         },

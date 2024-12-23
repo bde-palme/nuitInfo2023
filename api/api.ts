@@ -29,35 +29,40 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV == "dev") app.use(cors());
 
 app.use((req, res, next) => {
     console.log(
-        `${new Date().toISOString()} - ${req.method} ${
-            req.originalUrl
+        `${new Date().toISOString()} - ${req.method} ${req.originalUrl
         } STATUS: ${res.statusCode} - ${req.ip} - ${req.get("User-Agent")}}`
     );
     next();
 });
 
-// app.listen(port, () => {
-//     console.log(`Server running at http://localhost:${port}`);
+
+
+try {
+    const privkey = fs.readFileSync("./certs/privkey.pem");
+    const ca = fs.readFileSync("./certs/fullchain.pem");
+
+    const credentials = {
+        key: privkey,
+        cert: ca,
+    };
+
+    const httpServer = http.createServer(app);
+    const httpsServer = https.createServer(credentials, app);
+
+    httpServer.listen(80, () => {
+        console.log("HTTP Server running on port 80");
+    });
+}
+catch {
+    app.listen(port, () => {
+        console.log(`Server running at http://localhost:${port}`);
+    });
+}
+
+
+// httpsServer.listen(443, () => {
+//     console.log("HTTPS Server running on port 443");
 // });
-
-const privkey = fs.readFileSync("./certs/privkey.pem");
-const ca = fs.readFileSync("./certs/fullchain.pem");
-
-const credentials = {
-    key: privkey,
-    cert: ca,
-};
-
-const httpServer = http.createServer(app);
-const httpsServer = https.createServer(credentials, app);
-
-httpServer.listen(80, () => {
-    console.log("HTTP Server running on port 80");
-});
-
-httpsServer.listen(443, () => {
-    console.log("HTTPS Server running on port 443");
-});
 
 app.use(express.static("../front/build", { extensions: ["html"] }));
 

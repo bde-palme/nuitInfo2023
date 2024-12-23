@@ -4,6 +4,7 @@ This project is structured to provide a backend API using Rocket for managing te
 
 *This is not affiliated to the official organization of la nuit de l'info.*
 
+Design & code realised by Valentin Regnault.
 
 ## Project Structure
 
@@ -56,3 +57,10 @@ http://127.0.0.1:8000
 ```
 
 API routes are described in the api_routes.md
+
+# Images
+
+![image](images-readme/image.png)
+![image](images-readme/image2.png)
+![image](images-readme/image3.png)
+![image](images-readme/image4.png)
