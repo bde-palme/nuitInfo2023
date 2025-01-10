@@ -1,12 +1,10 @@
-# Nuit de l'info 2023
+## Hack Ta Fac 2024
 
-This project is the fullstack website for registering to the Nuit de l'info 2023 event, in Rennes, at the ISTIC school. This event is organized by the student association la Palme.
+This project is the fullstack website for registering to the HackTaFac 2024 event, in Rennes, at the ISTIC school. This event is organized by the student association la Palme.
 
 - Backend: Node.js, typescript
 - Database: MongoDB
 - Frontend: Svelte, typescript
-
-*This is not affiliated to the official organization of la nuit de l'info.*
 
 Design & code realised by Valentin Regnault.
 
